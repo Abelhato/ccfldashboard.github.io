@@ -518,6 +518,279 @@
     /* MapLibre popup parity */
     .custom-popup .maplibregl-popup-content { padding: 0; margin: 0; width: 220px !important; overflow: hidden; border-radius: 8px; box-shadow: 0 3px 14px rgba(0,0,0,0.2); }
     .custom-popup .maplibregl-popup-tip { display: none; }
+
+    /* Stop popup pills */
+    .stop-popup {
+      padding: 12px 12px 14px;
+      background: rgba(255, 255, 255, 0.98);
+    }
+    .stop-popup__title {
+      font-weight: 800;
+      font-size: 0.98rem;
+      color: #0f172a;
+      line-height: 1.15;
+    }
+    .stop-popup__meta {
+      margin-top: 2px;
+      font-size: 0.78rem;
+      color: rgba(15, 23, 42, 0.6);
+      font-variant-numeric: tabular-nums;
+    }
+    .stop-popup__section {
+      margin-top: 10px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      color: rgba(15, 23, 42, 0.6);
+      text-transform: uppercase;
+    }
+    .pill-row {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .route-preview {
+      position: fixed;
+      display: grid;
+      gap: 6px;
+      max-height: 240px;
+      overflow-y: auto;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 12px;
+      border: 1px solid rgba(15, 23, 42, 0.1);
+      box-shadow: 0 18px 36px rgba(15, 23, 42, 0.24);
+      z-index: 2200;
+    }
+    .route-preview.hidden { display: none; }
+    .route-preview .preview-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(15, 23, 42, 0.06);
+      background: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      transition: background 120ms ease, transform 120ms ease;
+    }
+    .route-preview .preview-item:hover { background: rgba(15, 23, 42, 0.04); transform: translateY(-1px); }
+    .route-preview .preview-label {
+      font-weight: 700;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+    }
+    body.theme-dark .route-preview .preview-item {
+      border-color: rgba(255, 255, 255, 0.12);
+      background: rgba(15, 23, 42, 0.7);
+    }
+    body.theme-dark .route-preview .preview-item:hover { background: rgba(255, 255, 255, 0.06); }
+    .route-input-wrapper { position: relative; width: 100%; }
+    .route-input-wrapper input {
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 42px;
+    }
+    .route-selected-pill {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.14);
+      cursor: text;
+      z-index: 1501;
+    }
+    .route-selected-pill.hidden { display: none; }
+    .route-input-wrapper.pill-visible input {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .route-input-wrapper.input-focused .route-selected-pill { display: none; }
+    .route-selected-pill #route-selected-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      min-width: 0;
+      font-weight: 800;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .route-clear {
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 1rem;
+      padding: 4px 6px;
+      cursor: pointer;
+      border-radius: 8px;
+      flex-shrink: 0;
+      transition: background 120ms ease, transform 120ms ease;
+    }
+    .route-clear:hover { background: rgba(15, 23, 42, 0.08); transform: translateY(-1px); }
+    .route-clear:active { transform: translateY(0px); }
+    body.theme-dark .route-selected-pill {
+      background: rgba(15, 23, 42, 0.92);
+      border-color: rgba(255, 255, 255, 0.16);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+    }
+    body.theme-dark .route-clear { color: #f8fafc; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      line-height: 1.15;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      border: 1px solid var(--pill-border, rgba(15, 23, 42, 0.12));
+      color: var(--pill-fg, #0b1220);
+      background: var(--pill-bg, #e2e8f0);
+      white-space: nowrap;
+    }
+    .pill.pill--clickable {
+      cursor: pointer;
+      user-select: none;
+    }
+    .pill--loading {
+      background: rgba(148, 163, 184, 0.22);
+      border-color: rgba(148, 163, 184, 0.3);
+      color: rgba(15, 23, 42, 0.55);
+      box-shadow: none;
+    }
+    body.theme-dark .stop-popup {
+      background: rgba(15, 23, 42, 0.92);
+    }
+    body.theme-dark .stop-popup__title { color: rgba(255,255,255,0.92); }
+    body.theme-dark .stop-popup__meta,
+    body.theme-dark .stop-popup__section { color: rgba(255,255,255,0.62); }
+    body.theme-dark .pill {
+      border-color: var(--pill-border, rgba(255,255,255,0.16));
+      color: var(--pill-fg, rgba(15, 23, 42, 0.95));
+    }
+
+    /* Route/global stops */
+    :root {
+      --map-zoom-size: 24px;
+    }
+
+    @keyframes stopFadeIn {
+      from { opacity: 0; transform: scale(0.5); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .stop-marker {
+      --stop-border: #f1c40f; /* strong yellow */
+      --stop-fill: rgba(255, 255, 255, 0.98);
+      --stop-arrow: var(--stop-border);
+      --stop-ang: 0deg;
+      --stop-size: var(--map-zoom-size, 24px);
+      --stop-border-w: clamp(3px, calc(var(--stop-size) * 0.16), 6px);
+      --stop-arrow-l: clamp(8px, calc(var(--stop-size) * 0.42), 13px);
+      --stop-arrow-h: clamp(3px, calc(var(--stop-size) * 0.16), 6px);
+      width: var(--stop-size);
+      height: var(--stop-size);
+      border-radius: 50%;
+      background: var(--stop-fill);
+      border: var(--stop-border-w) solid var(--stop-border);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.28);
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35));
+      position: relative;
+      opacity: 1;
+      transform: scale(1);
+      transform-origin: center;
+      will-change: transform, opacity, filter;
+      animation: none;
+      transition: opacity 260ms ease, transform 260ms ease, filter 200ms ease;
+    }
+    .stop-marker.stop--hidden {
+      opacity: 0;
+      transform: scale(0.5);
+      animation: none;
+    }
+    .stop-marker.stop--shown {
+      opacity: 1;
+      transform: scale(1);
+      animation: none;
+    }
+    .stop-marker .stop-arrow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      transform: translate(-50%, -50%) rotate(var(--stop-ang)) translateX(calc(var(--stop-arrow-l) + 1px));
+      border-left: var(--stop-arrow-l) solid var(--stop-arrow);
+      border-top: var(--stop-arrow-h) solid transparent;
+      border-bottom: var(--stop-arrow-h) solid transparent;
+      opacity: 0.95;
+    }
+
+    /* Leaflet wrapper class so marker appearance changes don't animate map pan/zoom transforms */
+    .leaflet-marker-icon.stop-fade {
+      will-change: opacity, transform;
+    }
+    .leaflet-marker-icon.stop-fade {
+      width: var(--map-zoom-size, 24px) !important;
+      height: var(--map-zoom-size, 24px) !important;
+      margin-left: calc(var(--map-zoom-size, 24px) / -2) !important;
+      margin-top: calc(var(--map-zoom-size, 24px) / -2) !important;
+    }
+
+    /* Modern route pills for stop popups */
+    .route-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      line-height: 1.15;
+      font-weight: 900;
+      letter-spacing: 0.01em;
+      border: 1px solid var(--pill-border, rgba(15, 23, 42, 0.12));
+      color: var(--pill-fg, #0b1220);
+      background: var(--pill-bg, #e2e8f0);
+      white-space: nowrap;
+      user-select: none;
+      box-shadow: 0 6px 12px rgba(15, 23, 42, 0.12);
+      transition: transform 160ms ease, filter 160ms ease;
+    }
+    .route-pill.route-pill--clickable { cursor: pointer; }
+    .route-pill.route-pill--clickable:hover { filter: brightness(0.98); transform: translateY(-1px); }
+    .route-pill.route-pill--clickable:active { transform: translateY(0px); filter: brightness(0.96); }
+    .route-pill.route-pill--loading {
+      background: rgba(148, 163, 184, 0.22);
+      border-color: rgba(148, 163, 184, 0.3);
+      color: rgba(15, 23, 42, 0.55);
+      box-shadow: none;
+    }
+    .route-pill.route-pill--inline {
+      box-shadow: none;
+      padding: 4px 10px;
+      font-size: 0.92rem;
+      vertical-align: middle;
+    }
+    .route-title-rest {
+      font-weight: 700;
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+    body.theme-dark .route-pill {
+      border-color: var(--pill-border, rgba(255, 255, 255, 0.16));
+      color: var(--pill-fg, #0b1220);
+      box-shadow: none;
+    }
     .custom-popup .maplibregl-popup-close-button { color: white; font-size: 16px; padding: 6px 10px; z-index: 10; }
     .custom-popup .maplibregl-popup-close-button:hover { background: rgba(0,0,0,0.1); }
 
@@ -558,8 +831,13 @@
        otherwise markers can "drift" a few pixels due to the map engine updating transforms. */
     .map-interacting .leaflet-marker-icon,
     .map-interacting .maplibregl-marker,
-    .map-interacting .veh-wrapper {
+    .map-interacting .veh-wrapper,
+    .map-interacting .stop-marker,
+    .map-interacting .veh-marker {
       transition: none !important;
+    }
+    .map-interacting .stop-marker {
+      animation: none !important;
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -743,8 +1021,15 @@
       </div>
       <div class="sidebar-section">
         <label for="route-filter">🛣️ Carreira</label>
-        <input id="route-filter" type="text" list="route-filter-options" placeholder="Pesquise por carreira..." autocomplete="off">
+        <div class="route-input-wrapper">
+          <input id="route-filter" type="text" placeholder="Pesquise por carreira..." autocomplete="off">
+          <div id="route-selected-pill" class="route-selected-pill hidden" role="button" tabindex="0" aria-label="Carreira selecionada">
+            <span id="route-selected-text"></span>
+            <button id="route-clear" class="route-clear" type="button" aria-label="Voltar à Rede Global">✕</button>
+          </div>
+        </div>
         <datalist id="route-filter-options"></datalist>
+        <div id="route-preview" class="route-preview hidden" role="listbox" aria-label="Sugestões de carreiras"></div>
       </div>
       <div class="sidebar-section hidden" id="variant-filter-group">
         <label for="variant-filter">🔀 Variante</label>
@@ -817,12 +1102,19 @@
   <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    const API_URL = "https://rt.jdcp.workers.dev/";
-    const urlParams = new URLSearchParams(window.location.search);
+	    const API_URL = "https://rt.jdcp.workers.dev/";
+	    const urlParams = new URLSearchParams(window.location.search);
+	    const ACTIVE_WINDOW_MIN = (() => {
+	      const raw = (urlParams.get("active_window_min") || urlParams.get("activeWindowMin") || "").trim();
+	      if (!raw) return 10;
+	      const parsed = Number.parseInt(raw, 10);
+	      if (!Number.isFinite(parsed)) return 10;
+	      return Math.max(1, Math.min(180, parsed));
+	    })();
 
-    const MAP_CENTER = [38.736946, -9.142685];
-    const MAP_ZOOM = 13;
-    const REFRESH_RATE_MS = 5000;
+	    const MAP_CENTER = [38.736946, -9.142685];
+	    const MAP_ZOOM = 13;
+	    const REFRESH_RATE_MS = 5000;
     // Mimic Streamlit dashboard: on each poll, vehicles with a new ping slide for ~1s, otherwise stay still.
     const ANIMATION_MS = 1000;
     const ACTIVE_SECONDS = 300;
@@ -864,6 +1156,46 @@
       "Elétricos",
       "Rede Madrugada"
     ];
+    // Zone mapping provided by Carris (for future zoning features).
+    const ZONE_COLOR_BY_NAME = {
+      Bairro: "#FFE113",
+      Centro: "#FF7F00",
+      Ocidental: "#FF0078",
+      Madrugada: "#0060A9",
+      Transversal: "#808080",
+      Oriental: "#F70002",
+      Noroeste: "#00A0EF",
+      Norte: "#39BA2E"
+    };
+    const ZONE_ROUTE_BASES = {
+      Centro: new Set([
+        "12E", "24háE", "25E", "28E", "51E", "52E", "53E", "54E", "55E",
+        "702", "706", "709", "712", "713", "730", "734", "737", "740",
+        "773", "774", "790", "797"
+      ]),
+      Ocidental: new Set([
+        "15E", "18E", "714", "723", "732", "748", "751", "760", "776",
+        "784", "786"
+      ]),
+      Madrugada: new Set([
+        "201", "202", "203", "204", "205", "206", "207", "208", "209", "210"
+      ]),
+      Transversal: new Set([
+        "701", "703", "720", "727", "728", "728F", "738", "742", "750", "752",
+        "753", "756", "767"
+      ]),
+      Oriental: new Set([
+        "16E", "705", "708", "718", "722", "725", "731", "744", "745", "749",
+        "755", "759", "779", "781", "782", "783", "793", "794"
+      ]),
+      Noroeste: new Set([
+        "711", "716", "724", "726", "729", "746", "754", "758", "763", "764",
+        "765", "768", "770", "771", "780", "799"
+      ]),
+      Norte: new Set([
+        "717", "735", "736", "747", "757", "777", "778", "796", "798"
+      ])
+    };
 
     function dedupeList(list) {
       const seen = new Set();
@@ -878,11 +1210,19 @@
         });
     }
 
-	    function normalizeBaseUrl(raw) {
-	      if (!raw) return null;
-	      const value = raw.trim();
-	      if (!value) return null;
-	      const proto = (typeof location !== "undefined" && location.protocol && location.protocol !== "file:") ? location.protocol : "http:";
+    // Always send the ngrok bypass header so the warning screen is skipped.
+    const NGROK_SKIP_HEADER_VALUE = "69420";
+    function withNgrokBypass(options = {}) {
+      const headers = new Headers(options.headers || {});
+      headers.set("ngrok-skip-browser-warning", NGROK_SKIP_HEADER_VALUE);
+      return { ...options, headers };
+    }
+
+		    function normalizeBaseUrl(raw) {
+		      if (!raw) return null;
+		      const value = raw.trim();
+		      if (!value) return null;
+		      const proto = (typeof location !== "undefined" && location.protocol && location.protocol !== "file:") ? location.protocol : "http:";
 	      const host = (typeof location !== "undefined" && location.hostname) ? location.hostname : "127.0.0.1";
 	      if (/^\d+$/.test(value)) return `${proto}//${host}:${value}`;
 	      if (/^[\w.-]+:\d+$/i.test(value)) return `${proto}//${value}`;
@@ -891,7 +1231,7 @@
 	    }
 
 	    function resolveBackendBases() {
-	      const bases = [];
+	      const bases = ["https://tyron-uncondensational-prepossessingly.ngrok-free.dev"];
 	      const override = urlParams.get("backend") || urlParams.get("api_base");
 	      const normalizedOverride = normalizeBaseUrl(override);
 	      if (normalizedOverride) bases.push(normalizedOverride);
@@ -953,6 +1293,11 @@
     const categorySelect = document.getElementById("category-filter");
     const routeInput = document.getElementById("route-filter");
     const routeDatalist = document.getElementById("route-filter-options");
+    const routePreview = document.getElementById("route-preview");
+    const routeClear = document.getElementById("route-clear");
+    const routeSelectedPill = document.getElementById("route-selected-pill");
+    const routeSelectedText = document.getElementById("route-selected-text");
+    const routeInputWrapper = document.querySelector(".route-input-wrapper");
     const variantSelect = document.getElementById("variant-filter");
     const variantGroup = document.getElementById("variant-filter-group");
     const statusDot = document.getElementById("status-dot");
@@ -1037,7 +1382,7 @@
 
     async function loadRouteTranslator() {
       try {
-        const resp = await fetch(ROUTE_TRANSLATOR_URL, { cache: "no-store" });
+        const resp = await fetch(ROUTE_TRANSLATOR_URL, withNgrokBypass({ cache: "no-store" }));
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const text = await resp.text();
         const parsed = parseTranslatorCsv(text);
@@ -1052,7 +1397,7 @@
     async function loadRoutesCatalog() {
       if (routesCatalogLoaded) return;
       try {
-        const resp = await fetch(ROUTES_DATA_URL, { cache: "no-store" });
+        const resp = await fetch(ROUTES_DATA_URL, withNgrokBypass({ cache: "no-store" }));
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         const text = await resp.text();
         const lines = text.replace(/\r/g, "\n").split("\n");
@@ -1142,12 +1487,13 @@
       let entry = routeOptions.get(baseId);
       let created = false;
       if (!entry) {
-        entry = { label: "", variants: new Map(), categories: new Set() };
+        entry = { label: "", variants: new Map(), categories: new Set(), zones: new Set() };
         routeOptions.set(baseId, entry);
         created = true;
       } else {
         if (!entry.variants) entry.variants = new Map();
         if (!entry.categories) entry.categories = new Set();
+        if (!entry.zones) entry.zones = new Set();
       }
       return { entry, created };
     }
@@ -1177,8 +1523,17 @@
         }
       }
       const resolvedCategory = category || definirCategoria(shortName || fallbackLabel || baseId);
-      if (resolvedCategory && !entry.categories.has(resolvedCategory)) {
-        entry.categories.add(resolvedCategory);
+      const baseCategory = definirCategoria(baseId);
+      const categoriesToAdd = new Set([resolvedCategory, baseCategory].filter(Boolean));
+      categoriesToAdd.forEach(cat => {
+        if (!entry.categories.has(cat)) {
+          entry.categories.add(cat);
+          dirty = true;
+        }
+      });
+      const resolvedZone = definirZona(shortName || fallbackLabel || baseId);
+      if (resolvedZone && !entry.zones.has(resolvedZone)) {
+        entry.zones.add(resolvedZone);
         dirty = true;
       }
       return dirty;
@@ -1279,8 +1634,12 @@
         selectedVariant = VARIANT_FILTER_ALL;
         updateVariantOptions();
         renderVehicles();
+        refreshRouteOverlay(true).catch(() => {});
+        refreshGlobalStops(true).catch(() => {});
         refreshKpis(true);
         refreshCharts(true).catch(() => {});
+        updateRouteClearVisibility();
+        renderSelectedRoutePill();
       });
     }
 
@@ -1334,13 +1693,173 @@
       handleRouteInputCommit();
     }
 
+    function updateRoutePreviewPosition() {
+      if (!routePreview || !routeInput) return;
+      const rect = routeInput.getBoundingClientRect();
+      const top = rect.bottom + window.scrollY + 4;
+      const left = rect.left + window.scrollX;
+      routePreview.style.top = `${top}px`;
+      routePreview.style.left = `${left}px`;
+      routePreview.style.minWidth = `${rect.width}px`;
+      routePreview.style.maxWidth = `${Math.max(rect.width, 320)}px`;
+    }
+    const updateRoutePreviewPositionDebounced = debounce(updateRoutePreviewPosition, 160);
+
+    function updateRouteClearVisibility() {
+      const isGlobal = !selectedRoute || selectedRoute === ROUTE_FILTER_ALL;
+      if (routeClear) {
+        routeClear.classList.toggle("hidden", isGlobal);
+        routeClear.setAttribute("aria-hidden", isGlobal ? "true" : "false");
+      }
+      if (routeInputWrapper) {
+        routeInputWrapper.classList.toggle("pill-visible", !isGlobal && !routeInputWrapper.classList.contains("input-focused"));
+      }
+    }
+
+    function previewEntries(query) {
+      if (!routeOptions) return [];
+      const normalized = (query || "").trim().toLowerCase();
+      const entries = [];
+      routeOptions.forEach((data, baseId) => {
+        if (!routeMatchesSelectedCategory(data)) return;
+        const label = data.label || baseId;
+        if (normalized && !label.toLowerCase().includes(normalized)) return;
+        entries.push({ id: baseId, label });
+      });
+      const collator = new Intl.Collator("pt-PT", { numeric: true, sensitivity: "base" });
+      entries.sort((a, b) => collator.compare(a.label, b.label));
+      return entries;
+    }
+
+    function renderRoutePreview(query) {
+      if (!routePreview) return;
+      const entries = previewEntries(query);
+      if (!entries.length) {
+        routePreview.classList.add("hidden");
+        routePreview.innerHTML = "";
+        return;
+      }
+      const html = entries.map(({ id, label }) => {
+        const style = pillStyleForRoute(id || label);
+        const { code } = parseRouteCodeParts(id || label);
+        const pillText = code || id || label;
+        const regex = code ? new RegExp(`^${escapeRegex(code)}\\s*`, "i") : null;
+        const restLabel = regex ? (label.replace(regex, "").trim() || label) : label;
+        const safeLabel = escapeHtml(restLabel);
+        const safeId = escapeHtml(id);
+        const pill = `<span class="route-pill" aria-hidden="true" style="--pill-bg:${style.bg};--pill-fg:${style.fg};--pill-border:${style.border}">${escapeHtml(pillText)}</span>`;
+        return `<div class="preview-item" role="option" data-route-id="${safeId}">
+          <span class="preview-label">${pill} ${safeLabel}</span>
+        </div>`;
+      }).join("");
+      routePreview.innerHTML = html;
+      routePreview.classList.remove("hidden");
+      updateRoutePreviewPositionDebounced();
+      Array.from(routePreview.querySelectorAll(".preview-item")).forEach(item => {
+        if (item.dataset.bound === "1") return;
+        item.dataset.bound = "1";
+        item.addEventListener("mousedown", ev => {
+          ev.preventDefault();
+          const rid = item.dataset.routeId || "";
+          routeInput.value = routeLabelById.get(rid) || rid;
+          routeInput.dataset.focusCleared = "false";
+          selectedRoute = rid || ROUTE_FILTER_ALL;
+          selectedVariant = VARIANT_FILTER_ALL;
+          updateVariantOptions();
+          renderVehicles();
+          refreshRouteOverlay(true).catch(() => {});
+          refreshGlobalStops(true).catch(() => {});
+          refreshCharts(true).catch(() => {});
+          refreshKpis(true);
+          updateRouteClearVisibility();
+          renderSelectedRoutePill();
+          routeInputWrapper?.classList.remove("input-focused");
+          routePreview.classList.add("hidden");
+        });
+      });
+    }
+
+    function renderSelectedRoutePill() {
+      if (!routeSelectedPill || !routeSelectedText || !routeInputWrapper) return;
+      updateRouteClearVisibility();
+      const isGlobal = !selectedRoute || selectedRoute === ROUTE_FILTER_ALL;
+      if (isGlobal) {
+      routeSelectedPill.classList.add("hidden");
+      return;
+    }
+    const label = routeLabelById.get(selectedRoute) || selectedRoute;
+    const { code } = parseRouteCodeParts(selectedRoute || label);
+    const pillText = code || selectedRoute || label;
+    const style = pillStyleForRoute(selectedRoute || label);
+    const regex = code ? new RegExp(`^${escapeRegex(code)}\\s*`, "i") : null;
+    const restLabel = regex ? (label.replace(regex, "").trim() || label) : label;
+    const safeRest = escapeHtml(restLabel);
+    routeSelectedText.innerHTML = `<span class="route-pill route-pill--inline" style="--pill-bg:${style.bg};--pill-fg:${style.fg};--pill-border:${style.border}">${escapeHtml(pillText)}</span> <span class="route-title-rest" title="${safeRest}">${safeRest}</span>`;
+    routeSelectedPill.classList.remove("hidden");
+    routeInputWrapper.classList.add("pill-visible");
+  }
+
     function initRouteFilter() {
       if (!routeInput || !routeDatalist) return;
       routeInput.value = ROUTE_GLOBAL_LABEL;
+      // Prevent native datalist dropdown; we render our own preview list.
+      routeInput.removeAttribute("list");
       routeInput.addEventListener("focus", handleRouteInputFocus);
       routeInput.addEventListener("keydown", handleRouteInputKeyDown);
       routeInput.addEventListener("change", handleRouteInputCommit, { passive: true });
       routeInput.addEventListener("blur", handleRouteInputCommit);
+      routeInput.addEventListener("input", () => {
+        renderRoutePreview(routeInput.value || "");
+        updateRoutePreviewPositionDebounced();
+      });
+      routeInput.addEventListener("focus", () => {
+        renderRoutePreview(routeInput.value || "");
+        updateRoutePreviewPositionDebounced();
+        routeInputWrapper?.classList.add("input-focused");
+        routeInputWrapper?.classList.remove("pill-visible");
+        updateRouteClearVisibility();
+      });
+      routeInput.addEventListener("blur", () => {
+        setTimeout(() => routePreview?.classList.add("hidden"), 120);
+        routeInputWrapper?.classList.remove("input-focused");
+        updateRouteClearVisibility();
+      });
+      window.addEventListener("resize", updateRoutePreviewPositionDebounced, { passive: true });
+      window.addEventListener("scroll", updateRoutePreviewPositionDebounced, { passive: true });
+      if (routeClear) {
+        routeClear.addEventListener("click", () => {
+          selectedRoute = ROUTE_FILTER_ALL;
+          selectedVariant = VARIANT_FILTER_ALL;
+          syncRouteInputValue();
+          updateVariantOptions();
+          renderVehicles();
+          refreshRouteOverlay(true).catch(() => {});
+          refreshGlobalStops(true).catch(() => {});
+          refreshCharts(true).catch(() => {});
+          refreshKpis(true);
+          updateRouteClearVisibility();
+          renderSelectedRoutePill();
+        });
+      }
+      if (routeSelectedPill) {
+        routeSelectedPill.addEventListener("click", () => {
+          routeInputWrapper?.classList.remove("pill-visible");
+          routeInputWrapper?.classList.add("input-focused");
+          routeInput?.focus();
+          routeInput?.select();
+        });
+        routeSelectedPill.addEventListener("keydown", (ev) => {
+          if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            routeInputWrapper?.classList.remove("pill-visible");
+            routeInputWrapper?.classList.add("input-focused");
+            routeInput?.focus();
+            routeInput?.select();
+          }
+        });
+      }
+      updateRouteClearVisibility();
+      renderSelectedRoutePill();
     }
 
     function initVariantFilter() {
@@ -1351,6 +1870,8 @@
       variantSelect.addEventListener("change", () => {
         selectedVariant = variantSelect.value || VARIANT_FILTER_ALL;
         renderVehicles();
+        refreshRouteOverlay(true).catch(() => {});
+        refreshGlobalStops(true).catch(() => {});
         refreshKpis(true);
         refreshCharts(true).catch(() => {});
       });
@@ -1372,9 +1893,24 @@
 	      return rounded.toFixed(1);
 	    }
 
-    function updateFloatingContext(text) {
+    function normalizeContext(context) {
+      if (context && typeof context === "object") {
+        return { text: context.text || "", html: context.html || null };
+      }
+      const text = context == null ? "" : String(context);
+      return { text, html: null };
+    }
+
+    function updateFloatingContext(context) {
       if (!kpiFloatingText) return;
-      kpiFloatingText.textContent = text || "Categoria: rede global";
+      const ctx = normalizeContext(context);
+      if (ctx.html) {
+        kpiFloatingText.innerHTML = ctx.html;
+      } else {
+        kpiFloatingText.textContent = ctx.text || "Categoria: rede global";
+      }
+      const aria = ctx.text || "Categoria: rede global";
+      kpiFloatingText.setAttribute("aria-label", aria);
     }
 
     function startKpiAgeTicker() {
@@ -1407,26 +1943,27 @@
       kpiVelHourDelta.className = formatted.className;
     }
 
-	    function updateKpiDisplay(row, contextText) {
-	      if (!kpiPanel) return;
-	      lastKpiTimestamp = row && row.timestamp ? row.timestamp : null;
-	      kpiLastUpdate.textContent = lastKpiTimestamp ? formatUpdateAge(lastKpiTimestamp) : "—";
-	      startKpiAgeTicker();
-	      kpiActiveVehicles.textContent = row ? String(Math.round(row.veiculos_ativos ?? 0)) : "—";
+    function updateKpiDisplay(row, contextText) {
+      if (!kpiPanel) return;
+      lastKpiTimestamp = row && row.timestamp ? row.timestamp : null;
+      kpiLastUpdate.textContent = lastKpiTimestamp ? formatUpdateAge(lastKpiTimestamp) : "—";
+      startKpiAgeTicker();
+      kpiActiveVehicles.textContent = row ? String(Math.round(row.veiculos_ativos ?? 0)) : "—";
 	      const velDayText = row ? formatSpeedValue(row.vel_comercial ?? NaN) : null;
 	      if (kpiVelDay) {
 	        kpiVelDay.textContent = velDayText ?? "—";
 	        kpiVelDay.classList.toggle("has-unit", Boolean(velDayText));
 	      }
 	      const velHourText = row ? formatSpeedValue(row.vel_comercial_1h ?? NaN) : null;
-	      if (kpiVelHour) {
-	        kpiVelHour.textContent = velHourText ?? "—";
-	        kpiVelHour.classList.toggle("has-unit", Boolean(velHourText));
-	      }
-	      if (kpiContext) kpiContext.textContent = contextText || "—";
-	      updateFloatingContext(contextText);
-	      updateKpiDelta(row?.delta_vel_comercial);
-	    }
+      if (kpiVelHour) {
+        kpiVelHour.textContent = velHourText ?? "—";
+        kpiVelHour.classList.toggle("has-unit", Boolean(velHourText));
+      }
+      const ctx = normalizeContext(contextText);
+      if (kpiContext) kpiContext.textContent = ctx.text || "—";
+      updateFloatingContext(ctx);
+      updateKpiDelta(row?.delta_vel_comercial);
+    }
 
     function safeNumber(value) {
       const num = Number(value);
@@ -2090,7 +2627,7 @@
       }
     }
 
-    async function fetchFromEndpoints(endpoints, params = {}) {
+    async function fetchFromEndpoints(endpoints, params = {}, opts = {}) {
       const resolved = (endpoints || [])
         .map(endpoint => buildUrlWithParams(endpoint, params))
         .filter(Boolean);
@@ -2098,10 +2635,11 @@
       let lastError = null;
       for (const url of resolved) {
         try {
-          const response = await fetch(url, { cache: "no-store" });
+          const response = await fetch(url, withNgrokBypass({ ...opts, cache: "no-store" }));
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           return await response.json();
         } catch (err) {
+          if (opts.signal && opts.signal.aborted) throw err;
           lastError = err;
           console.warn("Falha ao contactar endpoint", url, err);
         }
@@ -2134,24 +2672,24 @@
         return routeKpisCache.row;
       }
       try {
-        if (!lineId) return null;
-        const encoded = encodeURIComponent(String(lineId));
-        const endpoints = KPI_ENDPOINTS.route.map(base => `${base}/${encoded}`);
-        const params = { active_window_min: 10 };
-        if (selectedCategory && selectedCategory !== CATEGORY_FILTER_ALL) params.categoria = selectedCategory;
-        const payload = await fetchFromEndpoints(endpoints, params);
-        const row = Array.isArray(payload) ? (payload[0] || null) : payload;
-        routeKpisCache = { timestamp: now, key, row };
-        return row;
-      } catch (err) {
-        console.warn("Falha ao carregar KPI da rota (novo endpoint), a tentar legacy:", err);
-        try {
-          const legacyParams = { active_window_min: 10 };
-          legacyParams.linha = lineId;
-          if (selectedCategory && selectedCategory !== CATEGORY_FILTER_ALL) legacyParams.categoria = selectedCategory;
-          const payload = await fetchFromEndpoints(KPI_ENDPOINTS.routeLegacy, legacyParams);
-          const row = Array.isArray(payload) ? (payload[0] || null) : payload;
-          routeKpisCache = { timestamp: now, key, row };
+	        if (!lineId) return null;
+	        const encoded = encodeURIComponent(String(lineId));
+	        const endpoints = KPI_ENDPOINTS.route.map(base => `${base}/${encoded}`);
+	        const params = { active_window_min: ACTIVE_WINDOW_MIN };
+	        if (selectedCategory && selectedCategory !== CATEGORY_FILTER_ALL) params.categoria = selectedCategory;
+	        const payload = await fetchFromEndpoints(endpoints, params);
+	        const row = Array.isArray(payload) ? (payload[0] || null) : payload;
+	        routeKpisCache = { timestamp: now, key, row };
+	        return row;
+	      } catch (err) {
+	        console.warn("Falha ao carregar KPI da rota (novo endpoint), a tentar legacy:", err);
+	        try {
+	          const legacyParams = { active_window_min: ACTIVE_WINDOW_MIN };
+	          legacyParams.linha = lineId;
+	          if (selectedCategory && selectedCategory !== CATEGORY_FILTER_ALL) legacyParams.categoria = selectedCategory;
+	          const payload = await fetchFromEndpoints(KPI_ENDPOINTS.routeLegacy, legacyParams);
+	          const row = Array.isArray(payload) ? (payload[0] || null) : payload;
+	          routeKpisCache = { timestamp: now, key, row };
           return row;
         } catch (legacyErr) {
           console.warn("Falha ao carregar KPI da rota (legacy):", legacyErr);
@@ -2168,15 +2706,15 @@
         return routeKpisCache.row;
       }
       try {
-        if (!variantId) return null;
-        const encoded = encodeURIComponent(String(variantId));
-        const endpoints = KPI_ENDPOINTS.routeVariant.map(base => `${base}/${encoded}`);
-        const params = { active_window_min: 10 };
-        if (selectedCategory && selectedCategory !== CATEGORY_FILTER_ALL) params.categoria = selectedCategory;
-        const payload = await fetchFromEndpoints(endpoints, params);
-        const row = Array.isArray(payload) ? (payload[0] || null) : payload;
-        routeKpisCache = { timestamp: now, key, row };
-        return row;
+	        if (!variantId) return null;
+	        const encoded = encodeURIComponent(String(variantId));
+	        const endpoints = KPI_ENDPOINTS.routeVariant.map(base => `${base}/${encoded}`);
+	        const params = { active_window_min: ACTIVE_WINDOW_MIN };
+	        if (selectedCategory && selectedCategory !== CATEGORY_FILTER_ALL) params.categoria = selectedCategory;
+	        const payload = await fetchFromEndpoints(endpoints, params);
+	        const row = Array.isArray(payload) ? (payload[0] || null) : payload;
+	        routeKpisCache = { timestamp: now, key, row };
+	        return row;
       } catch (err) {
         console.warn("Falha ao carregar KPI da variante:", err);
         return routeKpisCache.row || null;
@@ -2191,28 +2729,38 @@
         return routeKpisCache.row;
       }
       try {
-        if (!category) return null;
-        const encoded = encodeURIComponent(String(category));
-        const endpoints = KPI_ENDPOINTS.category.map(base => `${base}/${encoded}`);
-        const params = { active_window_min: 10 };
-        const payload = await fetchFromEndpoints(endpoints, params);
-        const row = Array.isArray(payload) ? (payload[0] || null) : payload;
-        routeKpisCache = { timestamp: now, key, row };
-        return row;
-      } catch (err) {
+	        if (!category) return null;
+	        const encoded = encodeURIComponent(String(category));
+	        const endpoints = KPI_ENDPOINTS.category.map(base => `${base}/${encoded}`);
+	        const params = { active_window_min: ACTIVE_WINDOW_MIN };
+	        const payload = await fetchFromEndpoints(endpoints, params);
+	        const row = Array.isArray(payload) ? (payload[0] || null) : payload;
+	        routeKpisCache = { timestamp: now, key, row };
+	        return row;
+	      } catch (err) {
         console.warn("Falha ao carregar KPI da categoria (novo endpoint):", err);
         return routeKpisCache.row || null;
       }
     }
 
-    function buildRouteContextText() {
+    function buildRouteContext() {
       const baseLabel = routeLabelById.get(selectedRoute) || selectedRoute || "Carreira";
+      let displayLabel = baseLabel;
+      let routeIdForPill = selectedRoute;
       if (selectedVariant && selectedVariant !== VARIANT_FILTER_ALL) {
         const variantEntry = routeOptions.get(selectedRoute)?.variants?.get(selectedVariant);
-        if (variantEntry) return `${variantEntry}`;
-        return `${baseLabel} • ${selectedVariant}`;
+        if (variantEntry) displayLabel = `${variantEntry}`;
+        else displayLabel = `${baseLabel} • ${selectedVariant}`;
+        routeIdForPill = selectedVariant || selectedRoute;
       }
-      return `${baseLabel}`;
+      const { code } = parseRouteCodeParts(routeIdForPill || displayLabel);
+      if (!code) return { text: displayLabel, html: null };
+      const style = pillStyleForRoute(routeIdForPill || displayLabel);
+      const regex = new RegExp(`^${escapeRegex(code)}\\s*`, "i");
+      const rest = displayLabel.replace(regex, "").trim();
+      const pillHtml = `<span class="route-pill route-pill--inline" style="--pill-bg:${style.bg};--pill-fg:${style.fg};--pill-border:${style.border}">${escapeHtml(code)}</span>`;
+      const html = rest ? `${pillHtml} <span class="route-title-rest">${escapeHtml(rest)}</span>` : pillHtml;
+      return { text: displayLabel, html };
     }
 
     async function refreshKpis(force = false) {
@@ -2226,7 +2774,7 @@
           ? `${selectedCategory}`
           : "Categoria: rede global";
       if (routeCandidates.length > 0) {
-        const contextText = buildRouteContextText();
+        const contextText = buildRouteContext();
         const hasRouteData = lastTrendLineCandidate != null && routeCandidates.includes(lastTrendLineCandidate);
         // Prefer the new scoped KPI endpoints (variant > route).
         let realtimeKpi = null;
@@ -2286,6 +2834,7 @@
       if (!routeInput) return;
       const focusCleared = routeInput.dataset.focusCleared === "true";
       routeInput.dataset.focusCleared = "false";
+      if (routePreview) routePreview.classList.add("hidden");
       const value = routeInput.value || "";
       const trimmedValue = value.trim();
       if (!trimmedValue && focusCleared) {
@@ -2304,8 +2853,13 @@
       selectedVariant = VARIANT_FILTER_ALL;
       updateVariantOptions();
       renderVehicles();
+      refreshRouteOverlay(true).catch(() => {});
+      refreshGlobalStops(true).catch(() => {});
       refreshCharts(true).catch(() => {});
       refreshKpis(true);
+      updateRouteClearVisibility();
+      renderSelectedRoutePill();
+      routeInputWrapper?.classList.remove("input-focused");
     }
 
     function resolveRouteInputValue(raw) {
@@ -2435,6 +2989,7 @@
           routeLabelLookup.set(key, id);
         }
       });
+      renderRoutePreview(routeInput?.value || "");
     }
 
     function translateRoute(routeId) {
@@ -2449,15 +3004,44 @@
       return ROUTE_TRANSLATOR.base[base] || raw;
     }
 
-    function definirCategoria(routeIdOrName) {
+    function parseRouteCodeParts(routeIdOrName) {
       const translated = translateRoute(routeIdOrName);
       const fallback = routeIdOrName != null ? String(routeIdOrName) : "";
       const candidate = (translated || fallback).toUpperCase();
       const normalized = candidate.replace(/[^A-Z0-9]/g, "");
-      if (normalized.endsWith("E")) return "Elétricos";
-      if (normalized.endsWith("B")) return "Carreiras de Bairro";
-      if (/^2\d{2}$/.test(normalized)) return "Rede Madrugada";
+      const match = normalized.match(/(\d{1,3}[A-Z]?)/); // allow codes that are not at the start of the string
+      const code = match ? match[1] : normalized;
+      const codeBase = (() => {
+        if (/^\d{3}[01]$/.test(code)) return code.slice(0, 3);
+        const digits = code.match(/(\d{1,3})/);
+        return digits ? digits[1] : code;
+      })();
+      return { code, codeBase };
+    }
+
+    function definirCategoria(routeIdOrName) {
+      const { code, codeBase } = parseRouteCodeParts(routeIdOrName);
+      const madrugadaSet = new Set(["201", "202", "203", "206", "207", "208", "210"]);
+      if (code.endsWith("E")) return "Elétricos";
+      if (code.endsWith("B")) return "Carreiras de Bairro";
+      if (/^2\d{2}$/.test(codeBase)) return "Rede Madrugada";
+      if (madrugadaSet.has(codeBase)) return "Rede Madrugada";
       return "Autocarros Diurnos";
+    }
+
+    function definirZona(routeIdOrName) {
+      const { code, codeBase } = parseRouteCodeParts(routeIdOrName);
+      if (!code && !codeBase) return null;
+      if (code.endsWith("B")) return "Bairro";
+      if (ZONE_ROUTE_BASES.Madrugada.has(codeBase)) return "Madrugada";
+      for (const [zone, routes] of Object.entries(ZONE_ROUTE_BASES)) {
+        if (routes.has(code) || routes.has(codeBase)) return zone;
+      }
+      return null;
+    }
+
+    function getZoneColor(zoneName) {
+      return ZONE_COLOR_BY_NAME[zoneName] || null;
     }
 
     function vehicleIconMarkup(style) {
@@ -2469,17 +3053,17 @@
 
     function popupHtml(v, style) {
       const label = v.routeLabel || v.linha || "—";
-      const tsValue = Number(v.ts ?? v.timestamp ?? Date.now());
-      const tsMs = tsValue > 1e12 ? tsValue : tsValue * 1000;
-      const updated = Number.isFinite(tsMs) ? new Date(tsMs) : new Date();
+      const dirId = getDirectionId(v);
+      const dirLabel = directionDisplayLabel(v?.routeId || v?.linha || "", dirId);
       return `
         <div class="pop-header" style="background-color: ${style.color}">
           <span style="font-size: 1.2em"> ${label}</span>
           <span style="opacity: 0.8">#${v.id}</span>
         </div>
         <div class="pop-body">
+          ${dirLabel ? `<div style="margin-bottom:4px"><b>${dirLabel}</b></div>` : ""}
           <div style="margin-bottom:4px"><b>Velocidade:</b> ${Math.round(v.speed || 0)} km/h</div>
-          <div><b>Atualizado:</b> ${updated.toLocaleTimeString()}</div>
+          ${dirLabel ? "" : (dirId === 0 || dirId === 1) ? `<div><b>Direção:</b> Sentido ${dirId}</div>` : ""}
         </div>
       `;
     }
@@ -2526,6 +3110,9 @@
       enriched.linha = enriched.routeLabel || enriched.linha || "";
       enriched.categoryResolved = category;
       enriched.category = category;
+      const zone = definirZona(routeRaw || label || vehicle.zone);
+      enriched.zone = zone || "";
+      enriched.zoneColor = getZoneColor(zone) || "";
       return enriched;
     }
 
@@ -2551,6 +3138,11 @@
       };
       const routeId = props.route_id ?? props.route ?? props.linha ?? props.line ?? "";
       const tsValue = props.timestamp ?? props.ts ?? props.time ?? Date.now();
+      const directionRaw = props.directionId ?? props.direction_id ?? props.direction ?? props.sentido ?? null;
+      const directionId = (() => {
+        const parsed = Number.parseInt(String(directionRaw), 10);
+        return Number.isFinite(parsed) ? parsed : null;
+      })();
 
       return {
         id: String(rawId),
@@ -2558,6 +3150,7 @@
         lon,
         linha: routeId,
         routeId,
+        directionId,
         bearing: toNumber(props.heading ?? props.bearing ?? props.azimuth ?? props.course ?? 0, 0),
         speed: toNumber(props.velocidade ?? props.speed ?? props.velocity ?? 0, 0),
         category: props.category ?? props.tipo ?? "",
@@ -2568,7 +3161,7 @@
     async function loadOfflineVehicles() {
       if (offlineVehiclesCache) return offlineVehiclesCache;
       try {
-        const response = await fetch(OFFLINE_VEHICLES_URL);
+        const response = await fetch(OFFLINE_VEHICLES_URL, withNgrokBypass());
         if (!response.ok) throw new Error("404");
         const data = await response.json();
         const features = Array.isArray(data?.features) ? data.features : [];
@@ -2579,17 +3172,84 @@
       return offlineVehiclesCache || VEHICLES_MOCK;
     }
 
-    const CATEGORY_STYLES = {
-      "Autocarros Diurnos": { color: "#2ecc71", icon: "fa-bus" },
-      "Carreiras de Bairro": { color: "#8e44ad", icon: "fa-home" },
-      "Elétricos": { color: "#f39c12", icon: "fa-train" },
-      "Rede Madrugada": { color: "#2980b9", icon: "fa-moon-o" }
+    const CATEGORY_PALETTES = {
+      // Requested: stronger contrast on Bus + Bairro; keep the same "family" as the Python palette.
+      "Autocarros Diurnos": { color0: "#2ecc71", color1: "#0b5d38", icon: "fa-bus" },
+      "Carreiras de Bairro": { color0: "#c084fc", color1: "#4c1d95", icon: "fa-home" },
+      "Elétricos": { color0: "#f39c12", color1: "#ff6b6b", icon: "fa-train" },
+      "Rede Madrugada": { color0: "#3498db", color1: "#2c3e90", icon: "fa-moon-o" }
     };
-    const DEFAULT_CATEGORY_STYLE = CATEGORY_STYLES["Autocarros Diurnos"];
+    const DEFAULT_CATEGORY_STYLE = CATEGORY_PALETTES["Autocarros Diurnos"];
+
+    const DIRECTION_PALETTE = {
+      0: { label: "Sentido 0" },
+      1: { label: "Sentido 1" },
+      unknown: { label: "Sentido —" }
+    };
+
+    function inferDirectionFromRouteId(routeId) {
+      const raw = (routeId == null) ? "" : String(routeId).trim();
+      if (!raw) return null;
+      const parts = raw.split("_");
+      if (parts.length >= 2) {
+        const maybeDir = Number.parseInt(parts[1], 10);
+        if (maybeDir === 0 || maybeDir === 1) return maybeDir;
+      }
+      return null;
+    }
+
+    function splitRouteDestinations(longName) {
+      const text = (longName || "").trim();
+      if (!text) return null;
+      const parts = text.split(/\s*[-–—]\s*/g).map(s => s.trim()).filter(Boolean);
+      if (parts.length >= 2) return [parts[0], parts[1]];
+      return null;
+    }
+
+    function normalizeDirectionForDisplay(directionId) {
+      if (!(directionId === 0 || directionId === 1)) return directionId;
+      // Requested: destinations are switched; invert mapping.
+      return directionId === 0 ? 1 : 0;
+    }
+
+    function directionDisplayLabel(routeId, directionId) {
+      if (!(directionId === 0 || directionId === 1)) return "";
+      const normalized = normalizeOptionKey(routeId);
+      const base = getBaseRouteKey(normalized);
+      const meta = (normalized && ROUTE_DETAILS.get(normalized))
+        || (base && BASE_ROUTE_DETAILS.get(base))
+        || (base && ROUTE_DETAILS.get(`${base}_0`))
+        || null;
+      const pair = splitRouteDestinations(meta?.longName || "");
+      if (!pair) return `Sentido ${directionId}`;
+      const idx = normalizeDirectionForDisplay(directionId) === 0 ? 0 : 1;
+      const dest = pair[idx];
+      return `Sentido ${directionId} → ${dest}`;
+    }
+
+    function getDirectionId(vehicle) {
+      const raw = vehicle?.directionId ?? vehicle?.direction_id ?? vehicle?.direction;
+      const parsed = Number.parseInt(String(raw), 10);
+      if (parsed === 0 || parsed === 1) return parsed;
+      // Some feeds encode direction in the route id itself (e.g. `170_0` / `170_1`)
+      return inferDirectionFromRouteId(vehicle?.routeId ?? vehicle?.linha ?? "");
+    }
+
+	    function pickCategoryStyle(category, directionId, { allowDirection = false } = {}) {
+	      const palette = CATEGORY_PALETTES[category] || DEFAULT_CATEGORY_STYLE;
+	      const effectiveDir = (directionId === 0 || directionId === 1) ? directionId : 0;
+	      const dir = allowDirection ? effectiveDir : 0;
+	      return {
+	        icon: palette.icon,
+	        color: (dir === 1 ? (palette.color1 || palette.color0) : palette.color0),
+	      };
+	    }
 
     function getStyle(vehicle) {
       const cat = vehicle?.categoryResolved || vehicle?.category;
-      return CATEGORY_STYLES[cat] || DEFAULT_CATEGORY_STYLE;
+      const dirId = getDirectionId(vehicle);
+      const allowDirection = Boolean(selectedRoute && selectedRoute !== ROUTE_FILTER_ALL);
+      return pickCategoryStyle(cat, dirId, { allowDirection });
     }
 
     // --- LEAFLET ADAPTER ---
@@ -2597,6 +3257,9 @@
       constructor() {
         this.map = L.map('map', { zoomControl: false, preferCanvas: true, inertia: true }).setView(MAP_CENTER, MAP_ZOOM);
         this.markers = new Map();
+        this.overlayGroup = L.layerGroup().addTo(this.map);
+        this.routeShapesLayer = L.layerGroup().addTo(this.overlayGroup);
+        this.routeStopsLayer = L.layerGroup().addTo(this.overlayGroup);
         this.isInteracting = false;
         this.animationDuration = Math.max(300, Math.min(ANIMATION_MS, REFRESH_RATE_MS - 150));
         L.control.zoom({ position: 'topright' }).addTo(this.map);
@@ -2614,12 +3277,14 @@
           this.isInteracting = true;
           const container = this.map.getContainer?.();
           if (container) container.classList.add("map-interacting");
+          document.body?.classList?.add?.("map-interacting");
           this.clearAllTransitions();
         };
         const endInteraction = () => {
           this.isInteracting = false;
           const container = this.map.getContainer?.();
           if (container) container.classList.remove("map-interacting");
+          document.body?.classList?.remove?.("map-interacting");
           // Ensure no lingering transitions after an interaction ends.
           this.clearAllTransitions();
         };
@@ -2678,7 +3343,81 @@
         if (this.shapesLayer) this.map.removeLayer(this.shapesLayer);
         this.shapesLayer = L.geoJSON(geojson || SHAPES_MOCK, {
           style: { color: "#3498db", weight: 4, opacity: 0.5 }
-        }).addTo(this.map);
+        }).addTo(this.routeShapesLayer);
+      }
+
+      clearOverlay() {
+        this.routeShapesLayer?.clearLayers?.();
+        this.routeStopsLayer?.clearLayers?.();
+      }
+
+      setRouteOverlay(payload, { fit = false } = {}) {
+        this.clearOverlay();
+        if (!payload) return;
+
+        const boundsLayers = [];
+        const segments = buildShapeSegments(payload?.shapes);
+        const shapes = Array.isArray(payload.shapes) ? payload.shapes : [];
+        for (const item of shapes) {
+          const geojson = item?.geojson;
+          if (!geojson || !geojson.type) continue;
+          const color = item?.color || "#3498db";
+          const lyr = L.geoJSON(geojson, {
+            style: { color, weight: 5, opacity: 0.65 }
+          });
+          lyr.addTo(this.routeShapesLayer);
+          boundsLayers.push(lyr);
+        }
+
+        const stops = Array.isArray(payload.stops) ? payload.stops : [];
+        for (const s of stops) {
+          const lat = Number(s?.stop_lat);
+          const lon = Number(s?.stop_lon);
+          if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+          const arrowColor = s?.color || "#3498db";
+          const fallbackAngle = Number(s?.direction_angle);
+          const alignedAngle = closestSegmentAngleForPoint(lat, lon, segments, fallbackAngle);
+          const iconHtml = `<div class="stop-marker stop--hidden" style="--stop-border:${arrowColor}; --stop-arrow:${arrowColor}; --stop-ang:${alignedAngle}deg"><span class="stop-arrow"></span></div>`;
+          const icon = L.divIcon({ html: iconHtml, className: "stop-fade", iconSize: [1, 1], iconAnchor: [0, 0] });
+          const stopName = s.stop_name || "Paragem";
+          const stopId = s.stop_id || "";
+          const marker = L.marker([lat, lon], { icon }).bindPopup(
+            stopPopupHtml({ stopName, stopId, loading: true }),
+            { maxWidth: 320, className: "custom-popup" }
+          );
+          marker.on("add", () => {
+            const el = marker.getElement?.();
+            const inner = el?.querySelector?.(".stop-marker");
+            if (!inner) return;
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              try { inner.getBoundingClientRect(); } catch (e) {}
+              inner.classList.remove("stop--hidden");
+              inner.classList.add("stop--shown");
+            }));
+          });
+          marker.on("popupopen", async () => {
+            if (!stopId) {
+              marker.setPopupContent(stopPopupHtml({ stopName, stopId, routes: [] }));
+              try { wireStopPopupPills(marker.getPopup?.().getElement?.()); } catch (e) {}
+              return;
+            }
+            const routes = await ensureStopRoutes(stopId);
+            marker.setPopupContent(stopPopupHtml({ stopName, stopId, routes }));
+            try { wireStopPopupPills(marker.getPopup?.().getElement?.()); } catch (e) {}
+          });
+          marker.addTo(this.routeStopsLayer);
+          boundsLayers.push(marker);
+        }
+
+        if (fit && boundsLayers.length) {
+          try {
+            const group = L.featureGroup(boundsLayers);
+            const bounds = group.getBounds();
+            if (bounds && bounds.isValid && bounds.isValid()) {
+              this.map.fitBounds(bounds, { padding: [36, 36] });
+            }
+          } catch (e) {}
+        }
       }
 
       makeDivIcon(style) {
@@ -2791,10 +3530,19 @@
         this.animationDuration = Math.max(300, Math.min(ANIMATION_MS, REFRESH_RATE_MS - 150));
         this.visualTickMs = 1000;
         this.visualIntervalId = null;
+        this.overlaySourceId = "route-overlay";
+        this.overlayReady = false;
+        this.routeOverlayFeatures = [];
+        this.globalStopFeatures = [];
+        this._lastRouteStopsCount = 0;
+        this._lastGlobalStopsCount = 0;
+        this.activePopups = [];
+        this._stopPieCache = new Map();
+        this._stopRoutesInflight = new Set();
         this.ready = this.init();
       }
 
-      async init() {
+	      async init() {
         this.map = new maplibregl.Map({
           container: "map",
           style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
@@ -2804,17 +3552,20 @@
         });
         this.map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
         await new Promise(resolve => this.map.once("load", resolve));
+        this.initOverlayLayers();
 
         const startInteraction = () => {
           this.isInteracting = true;
           const container = this.map.getContainer?.();
           if (container) container.classList.add("map-interacting");
+          document.body?.classList?.add?.("map-interacting");
           this.clearAllTransitions();
         };
         const endInteraction = () => {
           this.isInteracting = false;
           const container = this.map.getContainer?.();
           if (container) container.classList.remove("map-interacting");
+          document.body?.classList?.remove?.("map-interacting");
           // Ensure no lingering transitions after an interaction ends.
           this.clearAllTransitions();
         };
@@ -2826,6 +3577,403 @@
         this.map.on("dragend", endInteraction);
 
         this.visualIntervalId = setInterval(() => this.tickVisuals(), this.visualTickMs);
+      }
+
+      ensureStopPieImage(colors) {
+        if (!this.map) return null;
+        const cols = canonicalPieColors(colors);
+        const key = (cols.length ? cols.join("|") : "default");
+        const cachedId = this._stopPieCache.get(key);
+        if (cachedId && this.map.hasImage(cachedId)) return cachedId;
+        const safeKey = key.replace(/[^a-z0-9]+/gi, "-") || "default";
+        const id = `stop-pie-${safeKey}`;
+        try {
+          if (!this.map.hasImage(id)) {
+            const canvas = buildPieImage(cols, 44);
+            this.map.addImage(id, canvas, { pixelRatio: 2 });
+          }
+          this._stopPieCache.set(key, id);
+          return id;
+        } catch (e) {
+          return this.map.hasImage("stop-pie-default") ? "stop-pie-default" : null;
+        }
+      }
+
+	      _applyOverlayData() {
+        if (!this.map) return;
+        this.initOverlayLayers();
+        const src = this.map.getSource(this.overlaySourceId);
+        if (!src || typeof src.setData !== "function") return;
+        const features = [
+          ...(Array.isArray(this.routeOverlayFeatures) ? this.routeOverlayFeatures : []),
+          ...(Array.isArray(this.globalStopFeatures) ? this.globalStopFeatures : [])
+        ];
+	        src.setData({ type: "FeatureCollection", features });
+	      }
+
+	      _fadeLayerPaint(layerId, paintProp, targetValue) {
+	        if (!this.map) return;
+	        try {
+	          this.map.setPaintProperty(layerId, paintProp, 0);
+	          requestAnimationFrame(() => {
+	            try { this.map.setPaintProperty(layerId, paintProp, targetValue); } catch (e2) {}
+	          });
+	        } catch (e) {}
+	      }
+
+      initOverlayLayers() {
+        if (!this.map) return;
+        this._routeStopsCircleOpacity = 0.98;
+        this._routeStopsIconOpacity = 0.95;
+        // Use constant opacity so MapLibre transitions reliably animate (we clear global stops below the zoom threshold).
+        this._globalStopsCircleOpacity = 0.98;
+        this._globalStopsIconOpacity = 0.92;
+
+        const empty = { type: "FeatureCollection", features: [] };
+        if (!this.map.getSource(this.overlaySourceId)) {
+          this.map.addSource(this.overlaySourceId, { type: "geojson", data: empty });
+        }
+	        if (!this.map.hasImage?.("stop-triangle")) {
+	          const canvas = document.createElement("canvas");
+	          canvas.width = 24;
+	          canvas.height = 24;
+	          const ctx = canvas.getContext("2d");
+	          // Up-pointing triangle; MapLibre rotates clockwise (degrees).
+	          ctx.fillStyle = "#000";
+	          ctx.beginPath();
+	          ctx.moveTo(12, 2);
+	          ctx.lineTo(18.5, 22);
+	          ctx.lineTo(5.5, 22);
+	          ctx.closePath();
+	          ctx.fill();
+	          this.map.addImage("stop-triangle", ctx.getImageData(0, 0, 24, 24), { sdf: true });
+	        }
+        if (!this.map.getLayer("route-shape")) {
+          this.map.addLayer({
+            id: "route-shape",
+            type: "line",
+            source: this.overlaySourceId,
+            filter: ["==", ["get", "kind"], "shape"],
+            paint: {
+              "line-color": ["get", "color"],
+              "line-width": 5,
+              "line-opacity": 0.65
+            }
+          });
+        }
+        if (!this.map.getLayer("route-stops")) {
+          this.map.addLayer({
+            id: "route-stops",
+            type: "circle",
+            source: this.overlaySourceId,
+            filter: ["==", ["get", "kind"], "stop"],
+            paint: {
+              "circle-radius": ["interpolate", ["linear"], ["zoom"], 11, 5, 14, 7, 17, 9],
+              "circle-color": ["coalesce", ["get", "fill"], "#ffffff"],
+              "circle-opacity": this._routeStopsCircleOpacity,
+              "circle-stroke-color": ["coalesce", ["get", "border"], "#f1c40f"],
+              "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 11, 2, 14, 2.8, 17, 3.4]
+            }
+          });
+        }
+        if (!this.map.getLayer("route-stop-triangles")) {
+          this.map.addLayer({
+            id: "route-stop-triangles",
+            type: "symbol",
+            source: this.overlaySourceId,
+            filter: ["==", ["get", "kind"], "stop"],
+            layout: {
+              "icon-image": "stop-triangle",
+              "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.34, 14, 0.42, 17, 0.5],
+              "icon-allow-overlap": true,
+              "icon-ignore-placement": true,
+              // Our `direction_angle` is degrees from East (0=E, 90=N). The triangle icon points North by default,
+              // so rotate by (90 - angle) to align correctly.
+              "icon-rotate": ["-", 90, ["coalesce", ["get", "direction_angle"], 0]],
+              "icon-rotation-alignment": "map",
+              "icon-anchor": "center",
+              // Offset the triangle slightly forward (in icon pixels). Note: this offset is in screen space,
+              // so keep it subtle; the corrected rotation handles the direction.
+              "icon-offset": [0, -1.7]
+            },
+            paint: {
+              "icon-color": ["coalesce", ["get", "arrow"], "#f1c40f"],
+              "icon-opacity": this._routeStopsIconOpacity
+            }
+          });
+        }
+        if (!this.map.getLayer("global-stops")) {
+          this.map.addLayer({
+            id: "global-stops",
+            type: "circle",
+            source: this.overlaySourceId,
+            filter: ["==", ["get", "kind"], "global_stop"],
+            paint: {
+              "circle-radius": ["interpolate", ["linear"], ["zoom"], 10.5, 1.2, 11.5, 2.4, 12.5, 4.8, 15, 8],
+              "circle-color": ["coalesce", ["get", "fill"], "#ffffff"],
+              "circle-opacity": ["interpolate", ["linear"], ["zoom"], 10.5, 0, 12, 0.08, 13.5, 0.24, 15, 0.4],
+              "circle-stroke-color": ["coalesce", ["get", "border"], "#ffd400"],
+              "circle-stroke-width": ["interpolate", ["linear"], ["zoom"], 10.5, 0.8, 11.5, 1.4, 12.5, 2.2, 15, 3.1]
+            }
+          });
+        }
+        if (!this.map.hasImage("stop-pie-default")) {
+          try { this.map.addImage("stop-pie-default", buildPieImage(["#ffd400"], 52), { pixelRatio: 2 }); } catch (e) {}
+        }
+        if (!this.map.getLayer("global-stops-symbol")) {
+          this.map.addLayer({
+            id: "global-stops-symbol",
+            type: "symbol",
+            source: this.overlaySourceId,
+            filter: ["==", ["get", "kind"], "global_stop"],
+            layout: {
+              "icon-image": ["coalesce", ["get", "icon"], "stop-pie-default"],
+              "icon-size": ["interpolate", ["linear"], ["zoom"], 10.5, 0.3, 11.5, 0.55, 12.5, 0.85, 15, 1.05],
+              "icon-allow-overlap": true,
+              "icon-ignore-placement": true,
+              "icon-anchor": "center"
+            },
+            paint: {
+              "icon-opacity": ["interpolate", ["linear"], ["zoom"], 10.5, 0, 12, 0.1, 13.5, this._globalStopsCircleOpacity]
+            }
+          });
+        }
+        if (!this.map.getLayer("global-stops-triangles")) {
+          this.map.addLayer({
+            id: "global-stops-triangles",
+            type: "symbol",
+            source: this.overlaySourceId,
+            filter: ["==", ["get", "kind"], "global_stop"],
+            layout: {
+              "icon-image": "stop-triangle",
+              "icon-size": 0.52,
+              "icon-allow-overlap": true,
+              "icon-ignore-placement": true,
+              // Same convention as route stops: degrees from East (0=E, 90=N) -> rotate by (90 - angle)
+              "icon-rotate": ["-", 90, ["coalesce", ["get", "direction_angle"], 0]],
+              "icon-rotation-alignment": "map",
+              "icon-anchor": "center"
+            },
+            paint: {
+              "icon-color": ["coalesce", ["get", "arrow"], "#000000"],
+              "icon-opacity": ["interpolate", ["linear"], ["zoom"], 10.5, 0, 12, 0.14, 13.5, this._globalStopsIconOpacity]
+            }
+          });
+        }
+
+        // Smooth fade when we toggle paint properties (used on data refresh).
+        try {
+          this.map.setPaintProperty("route-stops", "circle-opacity-transition", { duration: 260, delay: 0 });
+          this.map.setPaintProperty("route-stop-triangles", "icon-opacity-transition", { duration: 260, delay: 0 });
+          this.map.setPaintProperty("global-stops", "circle-opacity-transition", { duration: 420, delay: 0 });
+          this.map.setPaintProperty("global-stops-symbol", "icon-opacity-transition", { duration: 420, delay: 0 });
+          this.map.setPaintProperty("global-stops-triangles", "icon-opacity-transition", { duration: 420, delay: 0 });
+        } catch (e) {}
+
+        const closeAllPopups = () => {
+          const list = Array.isArray(this.activePopups) ? this.activePopups : [];
+          list.forEach(p => p?.remove?.());
+          this.activePopups = [];
+        };
+
+        this.map.on("click", "global-stops", (e) => {
+          try {
+            const feature = e?.features?.[0];
+            if (!feature) return;
+            const props = feature.properties || {};
+            const stopName = props.stop_name || "Paragem";
+            const stopId = props.stop_id || "";
+            closeAllPopups();
+            const html = stopPopupHtml({ stopName, stopId, loading: true });
+            const popup = new maplibregl.Popup({ offset: 12, className: "custom-popup" })
+              .setLngLat(e.lngLat)
+              .setHTML(html)
+              .addTo(this.map);
+            this.activePopups.push(popup);
+            (async () => {
+              try {
+                const routes = await ensureStopRoutes(stopId);
+                popup.setHTML(stopPopupHtml({ stopName, stopId, routes }));
+                try { wireStopPopupPills(popup.getElement?.()); } catch (e3) {}
+              } catch (e2) {}
+            })();
+          } catch (err) {}
+        });
+        this.map.on("click", "route-stops", (e) => {
+          try {
+            const feature = e?.features?.[0];
+            if (!feature) return;
+            const props = feature.properties || {};
+            const stopName = props.stop_name || "Paragem";
+            const stopId = props.stop_id || "";
+            closeAllPopups();
+            const popup = new maplibregl.Popup({ offset: 12, className: "custom-popup" })
+              .setLngLat(e.lngLat)
+              .setHTML(stopPopupHtml({ stopName, stopId, loading: true }))
+              .addTo(this.map);
+            this.activePopups.push(popup);
+            (async () => {
+              try {
+                const routes = stopId ? await ensureStopRoutes(stopId) : [];
+                popup.setHTML(stopPopupHtml({ stopName, stopId, routes }));
+                try { wireStopPopupPills(popup.getElement?.()); } catch (e3) {}
+              } catch (e2) {}
+            })();
+          } catch (err) {}
+        });
+        this.map.on("mouseenter", "route-stops", () => { this.map.getCanvas().style.cursor = "pointer"; });
+        this.map.on("mouseleave", "route-stops", () => { this.map.getCanvas().style.cursor = ""; });
+        this.map.on("mouseenter", "global-stops", () => { this.map.getCanvas().style.cursor = "pointer"; });
+        this.map.on("mouseleave", "global-stops", () => { this.map.getCanvas().style.cursor = ""; });
+
+        this.overlayReady = true;
+      }
+
+      clearOverlay() {
+        if (!this.map) return;
+        this.routeOverlayFeatures = [];
+        this.globalStopFeatures = [];
+        this._applyOverlayData();
+      }
+
+	      setRouteOverlay(payload, { fit = false } = {}) {
+	        if (!this.map) return;
+	        this.initOverlayLayers();
+	        const prevStopCount = this._lastRouteStopsCount || 0;
+	        const features = [];
+	        const shapes = Array.isArray(payload?.shapes) ? payload.shapes : [];
+	        const stops = Array.isArray(payload?.stops) ? payload.stops : [];
+	        const segments = buildShapeSegments(shapes);
+
+        for (const item of shapes) {
+          const geojson = item?.geojson;
+          if (!geojson || !Array.isArray(geojson.features)) continue;
+          const color = item?.color || "#3498db";
+          for (const f of geojson.features) {
+            if (!f || f.type !== "Feature") continue;
+            if (f.geometry?.type !== "LineString") continue;
+            features.push({
+              type: "Feature",
+              properties: { ...(f.properties || {}), kind: "shape", color },
+              geometry: f.geometry
+            });
+          }
+        }
+
+	        for (const s of stops) {
+	          const lat = Number(s?.stop_lat);
+	          const lon = Number(s?.stop_lon);
+	          if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+	          const color = s?.color || "#3498db";
+	          const fallbackAngle = Number(s?.direction_angle);
+	          const alignedAngle = closestSegmentAngleForPoint(lat, lon, segments, fallbackAngle);
+	          features.push({
+	            type: "Feature",
+	            properties: {
+	              kind: "stop",
+              fill: "#ffffff",
+              border: color,
+              arrow: color,
+              stop_id: s?.stop_id || "",
+              stop_name: s?.stop_name || "",
+              direction_angle: alignedAngle
+            },
+            geometry: { type: "Point", coordinates: [lon, lat] }
+          });
+        }
+
+	        this.routeOverlayFeatures = features;
+	        this._applyOverlayData();
+	        this._lastRouteStopsCount = stops.length;
+
+	        if (prevStopCount === 0 && stops.length > 0) {
+	          this._fadeLayerPaint("route-stops", "circle-opacity", Number(this._routeStopsCircleOpacity ?? 0.98));
+	          this._fadeLayerPaint("route-stop-triangles", "icon-opacity", Number(this._routeStopsIconOpacity ?? 0.95));
+	        }
+
+	        if (fit && features.length) {
+	          try {
+	            const bounds = new maplibregl.LngLatBounds();
+	            for (const f of features) {
+              if (f.geometry?.type === "Point") bounds.extend(f.geometry.coordinates);
+              if (f.geometry?.type === "LineString") {
+                for (const c of f.geometry.coordinates || []) bounds.extend(c);
+              }
+            }
+            if (!bounds.isEmpty()) this.map.fitBounds(bounds, { padding: 40, maxZoom: 15 });
+          } catch (e) {}
+        }
+      }
+
+	      setGlobalStops(payload) {
+	        if (!this.map) return;
+	        this.initOverlayLayers();
+	        const stops = Array.isArray(payload?.stops) ? payload.stops : [];
+	        const prevCount = this._lastGlobalStopsCount || 0;
+        const preferredAngles = stops.map(s => Number(s?.direction_angle));
+        const fallbackAngles = estimateAnglesFromNeighbors(stops, preferredAngles);
+        const angleDiff = (a, b) => {
+          const da = Math.abs(wrapAngleDeg(a) - wrapAngleDeg(b));
+          return Math.min(da, 360 - da);
+        };
+        const features = [];
+        const comboColors = new Map(); // key -> color array
+        for (let idx = 0; idx < stops.length; idx++) {
+          const s = stops[idx];
+          const lat = Number(s?.stop_lat);
+          const lon = Number(s?.stop_lon);
+          if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+          const stopId = (s?.stop_id == null) ? "" : String(s.stop_id);
+          const angleRaw = Number(s?.direction_angle);
+          const local = Number(fallbackAngles[idx] || 0);
+          // Prefer backend-provided tangent; fallback to neighbor estimate only if missing.
+          const angle = Number.isFinite(angleRaw) ? angleRaw : local;
+          const routes = Array.isArray(s?.routes) ? s.routes : [];
+          if (stopId && routes.length) stopRoutesCache.set(stopId, routes);
+          const finalColors = ["#ffd400"]; // brighter uniform yellow ring
+          const comboKey = finalColors.length ? finalColors.join("|") : "default";
+          if (!comboColors.has(comboKey)) comboColors.set(comboKey, finalColors);
+          const primaryColor = "#ffd400";
+          const arrowColor = "#000000";
+          features.push({
+            type: "Feature",
+            properties: {
+              kind: "global_stop",
+              stop_id: stopId,
+              stop_name: s?.stop_name || "",
+              direction_angle: Number.isFinite(angle) ? angle : 0,
+              routes,
+              colors: finalColors,
+              fill: "#ffffff",
+              border: primaryColor,
+              arrow: arrowColor,
+              icon: null, // filled after icons ensured
+              iconId: null
+            },
+            geometry: { type: "Point", coordinates: [lon, lat] }
+          });
+        }
+        // Pre-render one image per color combo and assign icon ids to features.
+        const comboToId = new Map();
+        for (const [key, colors] of comboColors.entries()) {
+          const id = this.ensureStopPieImage(colors) || "stop-pie-default";
+          comboToId.set(key, id);
+        }
+        for (const f of features) {
+          const cols = Array.isArray(f.properties?.colors) ? f.properties.colors : [];
+          const k = cols.length ? cols.join("|") : "default";
+          const imgId = comboToId.get(k) || "stop-pie-default";
+          f.properties.icon = imgId;
+          f.properties.iconId = imgId;
+        }
+        this.globalStopFeatures = features;
+        this._applyOverlayData();
+	        this._lastGlobalStopsCount = features.length;
+
+        // Smooth fade in/out on refresh.
+        this._fadeLayerPaint("global-stops", "circle-opacity", Number(this._globalStopsCircleOpacity ?? 0.98));
+        this._fadeLayerPaint("global-stops-symbol", "icon-opacity", Number(this._globalStopsCircleOpacity ?? 0.98));
+        this._fadeLayerPaint("global-stops-triangles", "icon-opacity", Number(this._globalStopsIconOpacity ?? 0.92));
       }
 
       createMarker(id, coords, style, vehicle, serverTsSec) {
@@ -3016,9 +4164,945 @@
 	      adapter = {
 	        ready: Promise.resolve(),
 	        updateVehicles: () => 0,
-	        setVisibleIds: () => 0
+	        setVisibleIds: () => 0,
+          clearOverlay: () => {},
+          setRouteOverlay: () => {}
 	      };
 	    }
+
+    function clampNumber(v, min, max) {
+      const n = Number(v);
+      if (!Number.isFinite(n)) return min;
+      return Math.min(max, Math.max(min, n));
+    }
+
+    function debounce(fn, wait = 160) {
+      let t = null;
+      return (...args) => {
+        if (t) clearTimeout(t);
+        t = setTimeout(() => fn(...args), wait);
+      };
+    }
+
+	    function wrapAngleDeg(deg) {
+	      const n = Number(deg);
+	      if (!Number.isFinite(n)) return 0;
+	      let out = n % 360;
+	      if (out < 0) out += 360;
+	      return out;
+	    }
+
+	    // Bearing in degrees from East (0=E, 90=N), matching `direction_angle` convention in this app.
+	    function bearingDegFromEast(lat1, lon1, lat2, lon2) {
+	      const φ1 = (Number(lat1) * Math.PI) / 180;
+	      const φ2 = (Number(lat2) * Math.PI) / 180;
+	      const Δλ = ((Number(lon2) - Number(lon1)) * Math.PI) / 180;
+	      const y = Math.sin(Δλ) * Math.cos(φ2);
+	      const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+	      // `atan2(y, x)` gives bearing from North (clockwise). Convert to "from East" convention.
+	      const bearingFromNorth = Math.atan2(y, x) * (180 / Math.PI); // -180..180
+	      const bearingFromEast = 90 - bearingFromNorth;
+	      return wrapAngleDeg(bearingFromEast);
+	    }
+
+    function estimateAnglesFromNeighbors(stops, preferredAngles = null) {
+      const list = Array.isArray(stops) ? stops : [];
+	      const pts = [];
+	      for (let i = 0; i < list.length; i++) {
+	        const s = list[i];
+	        const lat = Number(s?.stop_lat);
+	        const lon = Number(s?.stop_lon);
+	        if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+	        pts.push({ i, lat, lon });
+	      }
+	      const out = new Array(list.length).fill(0);
+	      if (pts.length < 2) return out;
+
+	      const R = 6371000;
+	      const K = 8;
+	      const MAX_D_M = 260;
+	      const MAX_D2 = MAX_D_M * MAX_D_M;
+	      const preferred = Array.isArray(preferredAngles) ? preferredAngles : null;
+
+	      const angleDiff = (a, b) => {
+	        const da = Math.abs(wrapAngleDeg(a) - wrapAngleDeg(b));
+	        return Math.min(da, 360 - da);
+	      };
+
+	      for (const p of pts) {
+	        const refLat = (p.lat * Math.PI) / 180;
+	        const cosRef = Math.cos(refLat);
+	        const px = ((p.lon * Math.PI) / 180) * cosRef * R;
+	        const py = ((p.lat * Math.PI) / 180) * R;
+	        const neigh = [];
+	        for (const q of pts) {
+	          if (q.i === p.i) continue;
+	          const qx = ((q.lon * Math.PI) / 180) * cosRef * R;
+	          const qy = ((q.lat * Math.PI) / 180) * R;
+	          const dx = qx - px;
+	          const dy = qy - py;
+	          const d2 = dx * dx + dy * dy;
+	          if (d2 <= MAX_D2) neigh.push({ q, dx, dy, d2 });
+	        }
+	        if (neigh.length === 0) continue;
+	        neigh.sort((a, b) => a.d2 - b.d2);
+		        const use = neigh.slice(0, K);
+
+		        if (use.length === 1) {
+		          out[p.i] = bearingDegFromEast(p.lat, p.lon, use[0].q.lat, use[0].q.lon);
+		          continue;
+		        }
+
+	        let sxx = 0, syy = 0, sxy = 0;
+	        for (const n of use) {
+	          const dx = n.dx;
+	          const dy = n.dy;
+	          sxx += dx * dx;
+	          syy += dy * dy;
+	          sxy += dx * dy;
+	        }
+	        // Principal axis angle relative to x-axis (East), sign-ambiguous.
+	        const theta = 0.5 * Math.atan2(2 * sxy, (sxx - syy));
+	        const axisDeg = wrapAngleDeg(theta * (180 / Math.PI));
+	        const axisDegOpp = wrapAngleDeg(axisDeg + 180);
+
+	        const nearestBearing = bearingDegFromEast(p.lat, p.lon, use[0].q.lat, use[0].q.lon);
+	        const want = Number.isFinite(Number(preferred?.[p.i])) ? Number(preferred[p.i]) : nearestBearing;
+        out[p.i] = (angleDiff(axisDegOpp, want) < angleDiff(axisDeg, want)) ? axisDegOpp : axisDeg;
+      }
+      return out;
+    }
+
+    function uniqueZoneColorsFromRoutes(routes) {
+      const colors = [];
+      const seen = new Set();
+      const list = Array.isArray(routes) ? routes : [];
+      list.forEach(rRaw => {
+        const r = (rRaw == null) ? "" : String(rRaw).trim();
+        if (!r) return;
+        const zone = definirZona(r);
+        const color = zone ? getZoneColor(zone) : null;
+        if (color && !seen.has(color)) {
+          seen.add(color);
+          colors.push(color);
+        }
+      });
+      return colors;
+    }
+
+    function canonicalPieColors(colors) {
+      const seen = new Set();
+      const list = Array.isArray(colors) ? colors : [];
+      const deduped = [];
+      for (const raw of list) {
+        const c = (raw == null) ? "" : String(raw).trim();
+        if (!c) continue;
+        const key = c.toLowerCase();
+        if (seen.has(key)) continue;
+        seen.add(key);
+        deduped.push(c);
+      }
+      return deduped.sort();
+    }
+
+    function parseStopColors(value) {
+      if (Array.isArray(value)) return value;
+      if (typeof value === "string") {
+        try {
+          const parsed = JSON.parse(value);
+          if (Array.isArray(parsed)) return parsed;
+        } catch (e) {}
+      }
+      return [];
+    }
+
+    const ROUTE_PIE_COLORS = [
+      "#e74c3c", "#f39c12", "#f1c40f", "#2ecc71", "#1abc9c", "#16a085",
+      "#3498db", "#9b59b6", "#8e44ad", "#e67e22", "#d35400", "#34495e",
+      "#ff6b6b", "#1dd1a1", "#48dbfb", "#5f27cd"
+    ];
+
+    function hashString(str) {
+      let h = 0;
+      const s = String(str || "");
+      for (let i = 0; i < s.length; i++) {
+        h = ((h << 5) - h) + s.charCodeAt(i);
+        h |= 0;
+      }
+      return h >>> 0;
+    }
+
+    function colorForRouteLabel(label) {
+      const key = (label == null) ? "" : String(label).trim().toLowerCase();
+      if (!key) return CATEGORY_PALETTES["Autocarros Diurnos"].color0;
+      const idx = hashString(key) % ROUTE_PIE_COLORS.length;
+      return ROUTE_PIE_COLORS[idx];
+    }
+
+    // Route colors are derived from zone colors instead of per-route hashes for stop pies.
+
+    function buildPieImage(colors, size = 44) {
+      const cols = Array.isArray(colors) && colors.length ? colors : ["#f1c40f"];
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      const cx = size / 2;
+      const cy = size / 2;
+      const radius = size / 2 - 1;
+      const innerR = radius * 0.52;
+      const slice = (Math.PI * 2) / cols.length;
+      let start = -Math.PI / 2;
+      cols.forEach((c) => {
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.fillStyle = c;
+        ctx.arc(cx, cy, radius, start, start + slice);
+        ctx.closePath();
+        ctx.fill();
+        start += slice;
+      });
+      // Punch a hole for the arrow to sit cleanly.
+      ctx.save();
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.beginPath();
+      ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+      // Outer stroke for crisp edges.
+      ctx.beginPath();
+      ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 2;
+      ctx.arc(cx, cy, radius - 0.5, 0, Math.PI * 2);
+      ctx.stroke();
+      return canvas;
+    }
+
+	    function buildShapeSegments(shapes) {
+	      const segments = [];
+	      const list = Array.isArray(shapes) ? shapes : [];
+	      for (const item of list) {
+	        const geojson = item?.geojson;
+	        const feats = Array.isArray(geojson?.features) ? geojson.features : [];
+	        for (const f of feats) {
+	          if (f?.geometry?.type !== "LineString") continue;
+	          const coords = Array.isArray(f.geometry.coordinates) ? f.geometry.coordinates : [];
+	          for (let i = 1; i < coords.length; i++) {
+	            const a = coords[i - 1];
+	            const b = coords[i];
+	            if (!Array.isArray(a) || !Array.isArray(b)) continue;
+	            const lon1 = Number(a[0]), lat1 = Number(a[1]);
+	            const lon2 = Number(b[0]), lat2 = Number(b[1]);
+	            if (!Number.isFinite(lon1) || !Number.isFinite(lat1) || !Number.isFinite(lon2) || !Number.isFinite(lat2)) continue;
+	            segments.push({ lon1, lat1, lon2, lat2 });
+	          }
+	        }
+	      }
+	      return segments;
+	    }
+
+	    function closestSegmentAngleForPoint(lat, lon, segments, fallbackAngleDeg) {
+	      const segs = Array.isArray(segments) ? segments : [];
+	      if (!segs.length) return Number.isFinite(Number(fallbackAngleDeg)) ? Number(fallbackAngleDeg) : 0;
+
+	      const R = 6371000;
+	      const refLat = (Number(lat) * Math.PI) / 180;
+	      const cosRef = Math.cos(refLat);
+	      const px = ((Number(lon) * Math.PI) / 180) * cosRef * R;
+	      const py = ((Number(lat) * Math.PI) / 180) * R;
+
+	      let best = null;
+	      let bestD2 = Infinity;
+	      for (const s of segs) {
+	        const ax = ((s.lon1 * Math.PI) / 180) * cosRef * R;
+	        const ay = ((s.lat1 * Math.PI) / 180) * R;
+	        const bx = ((s.lon2 * Math.PI) / 180) * cosRef * R;
+	        const by = ((s.lat2 * Math.PI) / 180) * R;
+	        const abx = bx - ax;
+	        const aby = by - ay;
+	        const apx = px - ax;
+	        const apy = py - ay;
+	        const denom = abx * abx + aby * aby;
+	        if (denom <= 1e-12) continue;
+	        const t = clampNumber((apx * abx + apy * aby) / denom, 0, 1);
+	        const cx = ax + abx * t;
+	        const cy = ay + aby * t;
+	        const dx = px - cx;
+	        const dy = py - cy;
+	        const d2 = dx * dx + dy * dy;
+	        if (d2 < bestD2) {
+	          bestD2 = d2;
+	          best = s;
+	        }
+	      }
+
+	      if (!best) return Number.isFinite(Number(fallbackAngleDeg)) ? Number(fallbackAngleDeg) : 0;
+
+	      const a = bearingDegFromEast(best.lat1, best.lon1, best.lat2, best.lon2);
+	      const b = wrapAngleDeg(a + 180);
+	      const fallback = wrapAngleDeg(Number.isFinite(Number(fallbackAngleDeg)) ? Number(fallbackAngleDeg) : 0);
+	      const da = Math.min(Math.abs(a - fallback), 360 - Math.abs(a - fallback));
+	      const db = Math.min(Math.abs(b - fallback), 360 - Math.abs(b - fallback));
+	      return (db < da) ? b : a;
+	    }
+
+	    async function wireMapEvents() {
+	      try {
+	        if (adapter.ready instanceof Promise) await adapter.ready;
+	        if (!adapter?.map) return;
+	        const stopSizeForZoom = (z) => {
+	          if (!Number.isFinite(z)) return 10;
+          // Start almost invisible near the LOD threshold and grow gradually with zoom.
+	          const base = STOPS_MIN_ZOOM;
+	          const t = Math.max(0, z - base);
+	          const px = Math.round(5 + t * 3.8); // z=base => ~5px, each zoom adds ~3-4px
+	          return Math.max(5, Math.min(32, px));
+	        };
+	        const applyStopMarkerSize = () => {
+	          try {
+	            const z = Number(adapter.map.getZoom?.());
+	            const px = stopSizeForZoom(z);
+	            document.documentElement.style.setProperty("--map-zoom-size", `${px}px`);
+	          } catch (e) {}
+	        };
+	        // Leaflet supports multiple events in a single string; MapLibre doesn't.
+	        if (adapter instanceof LeafletAdapter) {
+	          const handleStopsUpdate = () => scheduleRefreshStops(false);
+	          adapter.map.on("zoomend", () => {
+	            handleStopsUpdate();
+	            applyStopMarkerSize();
+	          });
+	          adapter.map.on("moveend", handleStopsUpdate);
+	          adapter.map.on("movestart", cancelGlobalStopsFetch);
+	          adapter.map.on("zoomstart", cancelGlobalStopsFetch);
+	          applyStopMarkerSize();
+	        } else if (adapter instanceof MapLibreAdapter) {
+	          const handleStopsUpdate = () => scheduleRefreshStops(false);
+	          adapter.map.on("zoomend", () => {
+	            handleStopsUpdate();
+	            applyStopMarkerSize();
+	          });
+	          adapter.map.on("moveend", handleStopsUpdate);
+	          adapter.map.on("movestart", cancelGlobalStopsFetch);
+	          adapter.map.on("zoomstart", cancelGlobalStopsFetch);
+	          applyStopMarkerSize();
+	        }
+	      } catch (err) {}
+	    }
+
+	    const OVERLAY_CACHE_TTL_MS = 5 * 60_000;
+	    const OVERLAY_DIRECTIONS = [0, 1];
+	    const overlayCache = new Map(); // key -> { ts, payload }
+	    let currentOverlayKey = null;
+	    let currentOverlayFitKey = null;
+	    let overlayInflight = null;
+
+    // Stop marker tuning: LOD threshold and transition timing (CSS uses ~260ms).
+    const STOPS_MIN_ZOOM = 12.5;
+    const STOP_ANIMATION_MS = 260;
+    const STOP_REMOVE_DELAY_MS = STOP_ANIMATION_MS + 60;
+    const GLOBAL_STOPS_LIMIT = 520;
+    const GLOBAL_STOPS_LIMIT_MIN = 260;
+    const GLOBAL_STOPS_KEY_PRECISION = 1e5;
+	    const globalStopsCache = new Map(); // key -> { ts, payload }
+    let globalStopsAbort = null;
+	    let globalStopsKey = null;
+	    const renderedStopsMap = new Map(); // stopKey -> { marker, lat, lon, angleDeg }
+
+    function roundBoundsForStops(bounds, factor = GLOBAL_STOPS_KEY_PRECISION) {
+      if (!bounds) return null;
+      const round = (n) => Math.round(Number(n) * factor) / factor;
+      return {
+        minLat: round(bounds.minLat),
+        minLon: round(bounds.minLon),
+        maxLat: round(bounds.maxLat),
+        maxLon: round(bounds.maxLon)
+      };
+    }
+
+    function dynamicGlobalStopsLimit(z) {
+      const minZ = STOPS_MIN_ZOOM;
+      const maxZ = minZ + 4; // scale up over ~4 zoom levels
+      const t = clampNumber((Number(z) - minZ) / (maxZ - minZ), 0, 1);
+      const val = GLOBAL_STOPS_LIMIT_MIN + t * (GLOBAL_STOPS_LIMIT - GLOBAL_STOPS_LIMIT_MIN);
+      return Math.round(val);
+    }
+
+    function cancelGlobalStopsFetch() {
+      if (globalStopsAbort) {
+        try { globalStopsAbort.abort(); } catch (e) {}
+        globalStopsAbort = null;
+      }
+    }
+
+    const scheduleRefreshStops = (() => {
+      const debounced = debounce((force = false) => refreshGlobalStops(force).catch(() => {}), 170);
+      return (force = false) => {
+        cancelGlobalStopsFetch();
+        debounced(force);
+      };
+    })();
+
+    wireMapEvents().catch(() => {});
+
+    function activeVariantIdsForSelectedRoute() {
+      if (!selectedRoute || selectedRoute === ROUTE_FILTER_ALL) return [];
+      const out = new Set();
+      const list = Array.isArray(lastVehicles) ? lastVehicles : [];
+      for (const v of list) {
+        const variantKey = normalizeOptionKey(v?.routeId || v?.routeLabel);
+        if (!variantKey) continue;
+        const baseKey = getBaseRouteKey(variantKey);
+        if (baseKey && baseKey === selectedRoute) out.add(variantKey);
+      }
+      // If the feed didn't give us any active variants, fallback to what we know from the catalog.
+      if (out.size === 0) {
+        const entry = routeOptions.get(selectedRoute);
+        const variants = entry?.variants ? Array.from(entry.variants.keys()) : [];
+        variants.forEach(v => out.add(normalizeOptionKey(v)));
+      }
+      return Array.from(out).filter(Boolean).sort();
+    }
+
+    function resolveOverlayVariantIds() {
+      if (!selectedRoute || selectedRoute === ROUTE_FILTER_ALL) return [];
+      if (selectedVariant && selectedVariant !== VARIANT_FILTER_ALL) return [normalizeOptionKey(selectedVariant)];
+      // "Todas as variantes": render every variant that currently has active vehicles.
+      return activeVariantIdsForSelectedRoute();
+    }
+
+    function shapeEndpoints(routeId) {
+      const encoded = encodeURIComponent(String(routeId || ""));
+      return (LOCAL_BACKENDS || []).map(base => `${base}/api/shapes/${encoded}`);
+    }
+
+    function routeCategoryForId(routeId) {
+      const normalized = normalizeOptionKey(routeId);
+      const base = getBaseRouteKey(normalized);
+      const preferred = base ? `${base}_0` : "";
+      const meta = (normalized && ROUTE_DETAILS.get(normalized))
+        || (preferred && ROUTE_DETAILS.get(preferred))
+        || (base && BASE_ROUTE_DETAILS.get(base))
+        || null;
+      const shortName = (meta?.shortName || translateRoute(normalized) || translateRoute(preferred) || translateRoute(base) || "").trim();
+      // Important: direction palettes depend on the public short name (e.g. 15E),
+      // not on internal ids like `168_0`.
+      const category = definirCategoria(shortName || normalized || base);
+      const baseCategory = definirCategoria(base || normalized);
+      // 2XX nighttime routes can carry reused daytime labels (e.g., 26B); prefer base id category.
+      if (baseCategory === "Rede Madrugada" && category !== "Rede Madrugada") return baseCategory;
+      return category;
+    }
+
+    function routeDirectionColor(routeId, directionId) {
+      const category = routeCategoryForId(routeId);
+      const style = pickCategoryStyle(category, directionId, { allowDirection: true });
+      return style.color;
+    }
+
+	    function serverDirectionForClientDirection(directionId) {
+	      // Use the same direction id for both vehicles and overlays.
+	      return directionId;
+	    }
+
+    function stopsEndpoints(routeId) {
+      const encoded = encodeURIComponent(String(routeId || ""));
+      return (LOCAL_BACKENDS || []).map(base => `${base}/api/stops/${encoded}`);
+    }
+
+    async function fetchRouteOverlayPayload(routeIds) {
+      const now = Date.now();
+      const ids = Array.isArray(routeIds) ? routeIds.filter(Boolean) : [];
+      const cacheKey = JSON.stringify({ ids });
+      const cached = overlayCache.get(cacheKey);
+      if (cached && (now - cached.ts) < OVERLAY_CACHE_TTL_MS) return cached.payload;
+
+      const shapes = [];
+      const stops = [];
+      const seenStops = new Set();
+
+      for (const routeId of ids) {
+        for (const dirId of OVERLAY_DIRECTIONS) {
+          const color = routeDirectionColor(routeId, dirId);
+          try {
+            const geojson = await fetchFromEndpoints(shapeEndpoints(routeId), { direction: String(serverDirectionForClientDirection(dirId)) });
+            if (geojson && geojson.type) {
+              shapes.push({ routeId, directionId: dirId, color, geojson });
+            }
+          } catch (err) {}
+
+          try {
+            const rows = await fetchFromEndpoints(stopsEndpoints(routeId), { direction: String(serverDirectionForClientDirection(dirId)), limit: "220" });
+            const list = Array.isArray(rows) ? rows : [];
+            for (const s of list) {
+              const key = `${s?.stop_id || ""}|${Number(s?.stop_lat).toFixed(6)}|${Number(s?.stop_lon).toFixed(6)}|${dirId}|${routeId}`;
+              if (seenStops.has(key)) continue;
+              seenStops.add(key);
+              stops.push({ ...s, routeId, directionId: dirId, color });
+            }
+          } catch (err) {}
+        }
+      }
+
+      const payload = { routeIds: ids, shapes, stops };
+      overlayCache.set(cacheKey, { ts: now, payload });
+      return payload;
+    }
+
+    async function refreshRouteOverlay(force = false) {
+      const ids = resolveOverlayVariantIds();
+      const wantKey = ids.length ? JSON.stringify(ids) : null;
+
+      if (!wantKey) {
+        if (currentOverlayKey) {
+          currentOverlayKey = null;
+          currentOverlayFitKey = null;
+          adapter?.clearOverlay?.();
+        }
+        return;
+      }
+
+      if (!force && currentOverlayKey === wantKey) return;
+      currentOverlayKey = wantKey;
+
+      // Prevent overlapping refreshes for rapid filter changes.
+      if (overlayInflight) return;
+      overlayInflight = (async () => {
+        try {
+          if (adapter.ready instanceof Promise) await adapter.ready;
+          const payload = await fetchRouteOverlayPayload(ids);
+          const shouldFit = currentOverlayFitKey !== wantKey;
+          adapter?.setRouteOverlay?.(payload, { fit: shouldFit });
+          if (shouldFit) currentOverlayFitKey = wantKey;
+        } catch (err) {
+          console.warn("Falha ao carregar overlay de rota:", err);
+        } finally {
+          overlayInflight = null;
+        }
+      })();
+    }
+
+    function stopsBboxEndpoints() {
+      return (LOCAL_BACKENDS || []).map(base => `${base}/api/stops_bbox`);
+    }
+
+    function stopRoutesEndpoints(stopId) {
+      const encoded = encodeURIComponent(String(stopId || ""));
+      return (LOCAL_BACKENDS || []).map(base => `${base}/api/stop_routes/${encoded}`);
+    }
+
+    const stopRoutesCache = new Map(); // stop_id -> [routeShortNames]
+    const stopRoutesInflight = new Map(); // stop_id -> Promise
+
+    async function ensureStopRoutes(stopId) {
+      const key = String(stopId || "");
+      if (!key) return [];
+      if (stopRoutesCache.has(key)) return stopRoutesCache.get(key) || [];
+      const inflight = stopRoutesInflight.get(key);
+      if (inflight) return inflight;
+      const promise = (async () => {
+        try {
+          const payload = await fetchFromEndpoints(stopRoutesEndpoints(key), {});
+          const routes = Array.isArray(payload?.routes) ? payload.routes : [];
+          stopRoutesCache.set(key, routes);
+          return routes;
+        } catch (err) {
+          return [];
+        } finally {
+          stopRoutesInflight.delete(key);
+        }
+      })();
+      stopRoutesInflight.set(key, promise);
+      return promise;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function escapeRegex(value) {
+      return String(value ?? "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function pillBgForCategory(category) {
+      if (category === "Autocarros Diurnos") return "#2ecc71";
+      if (category === "Carreiras de Bairro") return "#c084fc";
+      if (category === "Elétricos") return "#f39c12";
+      if (category === "Rede Madrugada") return "#3498db";
+      return "#e2e8f0";
+    }
+
+    function resolveRouteZone(label) {
+      const zone = definirZona(label);
+      const color = getZoneColor(zone);
+      return { zone: zone || null, color: color || null };
+    }
+
+    function pillStyleForRoute(label) {
+      const { zone, color } = resolveRouteZone(label);
+      const cat = categoryForRouteLabel(label) || definirCategoria(label);
+      const bg = color || pillBgForCategory(cat);
+      const fg = color ? "#ffffff" : "#0b1220";
+      const border = color || "rgba(15, 23, 42, 0.12)";
+      const title = zone || cat || "Carreira";
+      return { bg, fg, border, title, zone };
+    }
+
+    function categoryForRouteLabel(label) {
+      const text = (label || "").trim();
+      if (!text) return null;
+      const lower = text.toLowerCase();
+      const routeId = routeLabelLookup.get(lower);
+      if (routeId) {
+        return routeCategoryForId(routeId);
+      }
+      const normalized = normalizeOptionKey(text);
+      const base = getBaseRouteKey(normalized);
+      const baseCategory = definirCategoria(base || normalized);
+      if (baseCategory === "Rede Madrugada") return baseCategory;
+      return definirCategoria(text);
+    }
+
+	    function routePillsHtml(routes) {
+	      const list = Array.isArray(routes) ? routes : [];
+	      if (!list.length) {
+	        return `<span class="route-pill" style="--pill-bg:#e2e8f0">—</span>`;
+	      }
+	      return list.map(r => {
+	        const label = (r == null) ? "" : String(r).trim();
+	        if (!label) return "";
+	        const style = pillStyleForRoute(label);
+	        const safeLabel = escapeHtml(label);
+	        const safeTitle = escapeHtml(style.title || label);
+	        return `<span class="route-pill route-pill--clickable" style="--pill-bg:${style.bg};--pill-fg:${style.fg};--pill-border:${style.border}" title="${safeTitle}" role="button" tabindex="0" data-route-label="${safeLabel}">${safeLabel}</span>`;
+	      }).filter(Boolean).join("");
+	    }
+
+	    function stopPopupHtml({ stopName, stopId, routes, loading = false } = {}) {
+	      const title = (stopName || "Paragem").trim();
+	      const meta = (stopId || "").trim();
+	      const pills = loading
+	        ? `<span class="route-pill route-pill--loading">a carregar…</span>`
+	        : routePillsHtml(routes);
+	      return `
+	        <div class="stop-popup">
+	          <div class="stop-popup__title">${title}</div>
+          <div class="stop-popup__meta">${meta}</div>
+          <div class="stop-popup__section">Carreiras</div>
+          <div class="pill-row">${pills}</div>
+        </div>
+      `;
+    }
+
+    function baseIdForPublicRouteLabel(label) {
+      const needle = (label || "").trim().toLowerCase();
+      if (!needle) return null;
+
+      // 1) Exact match against the translator base map (fast).
+      for (const [baseId, shortName] of Object.entries(ROUTE_TRANSLATOR.base || {})) {
+        if (!shortName) continue;
+        if (String(shortName).trim().toLowerCase() === needle) return String(baseId);
+      }
+
+      // 2) Match against loaded GTFS route short names.
+      for (const [routeId, meta] of ROUTE_DETAILS.entries()) {
+        const shortName = (meta?.shortName || "").trim().toLowerCase();
+        if (shortName && shortName === needle) return getBaseRouteKey(routeId);
+      }
+
+      return null;
+    }
+
+    function applyRouteSelection(baseId) {
+      if (!baseId) return;
+      selectedRoute = String(baseId);
+      selectedVariant = VARIANT_FILTER_ALL;
+      updateVariantOptions();
+      syncRouteInputValue();
+      renderVehicles();
+      refreshRouteOverlay(true).catch(() => {});
+      refreshGlobalStops(true).catch(() => {});
+      refreshCharts(true).catch(() => {});
+      refreshKpis(true);
+      setSidebarCollapsed(true);
+    }
+
+	    function wireStopPopupPills(containerEl) {
+	      if (!containerEl) return;
+	      const pills = Array.from(containerEl.querySelectorAll?.(".route-pill[data-route-label]") || []);
+	      pills.forEach(pill => {
+	        if (pill.dataset.bound === "1") return;
+	        pill.dataset.bound = "1";
+	        const activate = () => {
+          const label = pill.dataset.routeLabel || pill.textContent || "";
+          const baseId = baseIdForPublicRouteLabel(label) || resolveRouteInputValue(label);
+          if (baseId && baseId !== ROUTE_FILTER_ALL) applyRouteSelection(baseId);
+        };
+        pill.addEventListener("click", (ev) => { ev.preventDefault(); ev.stopPropagation(); activate(); });
+        pill.addEventListener("keydown", (ev) => {
+          if (ev.key === "Enter" || ev.key === " ") {
+            ev.preventDefault();
+            activate();
+          }
+        });
+      });
+    }
+
+    function adapterZoom() {
+      if (!adapter?.map || typeof adapter.map.getZoom !== "function") return NaN;
+      try {
+        return Number(adapter.map.getZoom());
+      } catch (e) {
+        return NaN;
+      }
+    }
+
+    function adapterBounds() {
+      if (!adapter?.map) return null;
+      try {
+        // Leaflet: LatLngBounds with getSouthWest/getNorthEast
+        if (typeof adapter.map.getBounds === "function") {
+          const b = adapter.map.getBounds();
+          const sw = b.getSouthWest?.();
+          const ne = b.getNorthEast?.();
+          if (sw && ne) {
+            return { minLat: sw.lat, minLon: sw.lng, maxLat: ne.lat, maxLon: ne.lng };
+          }
+        }
+        // MapLibre: LngLatBounds with getSouthWest/getNorthEast
+        if (typeof adapter.map.getBounds === "function") {
+          const b = adapter.map.getBounds();
+          const sw = b.getSouthWest?.();
+          const ne = b.getNorthEast?.();
+          if (sw && ne) {
+            return { minLat: sw.lat, minLon: sw.lng, maxLat: ne.lat, maxLon: ne.lng };
+          }
+        }
+      } catch (e) {}
+      return null;
+    }
+
+    function ensureLeafletGlobalStopsLayer() {
+      if (!(adapter instanceof LeafletAdapter)) return;
+      if (!adapter.globalStopsLayer) {
+        adapter.globalStopsLayer = L.layerGroup().addTo(adapter.overlayGroup);
+      }
+    }
+
+    function fadeOutLeafletLayer(layerGroup, ms = STOP_REMOVE_DELAY_MS) {
+      if (!layerGroup || typeof layerGroup.getLayers !== "function") return;
+      if (adapter instanceof LeafletAdapter && adapter.globalStopsLayer === layerGroup) {
+        renderedStopsMap.clear();
+      }
+      const layers = layerGroup.getLayers();
+      const timeoutMs = Math.max(50, Number.isFinite(ms) ? ms : STOP_REMOVE_DELAY_MS);
+      layers.forEach(layer => {
+        const el = layer?.getElement?.();
+        const inner = el?.querySelector?.(".stop-marker");
+        if (inner) {
+          inner.classList.remove("stop--shown");
+          inner.classList.add("stop--hidden");
+        }
+        setTimeout(() => {
+          try { layerGroup.removeLayer(layer); } catch (e) {}
+        }, timeoutMs);
+      });
+    }
+
+    function renderGlobalStops(payload) {
+      if (!payload) return;
+      const stops = Array.isArray(payload.stops) ? payload.stops : [];
+      const zoom = adapterZoom();
+      const belowLod = !Number.isFinite(zoom) || zoom < STOPS_MIN_ZOOM;
+
+      if (adapter instanceof LeafletAdapter) {
+        if (belowLod) {
+          if (adapter.globalStopsLayer) fadeOutLeafletLayer(adapter.globalStopsLayer);
+          return;
+        }
+        ensureLeafletGlobalStopsLayer();
+        const nextKeys = new Set();
+        const preferredAngles = stops.map(s => Number(s?.direction_angle));
+        const fallbackAngles = estimateAnglesFromNeighbors(stops, preferredAngles);
+        const angleDiff = (a, b) => {
+          const da = Math.abs(wrapAngleDeg(a) - wrapAngleDeg(b));
+          return Math.min(da, 360 - da);
+        };
+
+        const keyForStop = (s) => {
+          const stopId = (s?.stop_id || "").trim();
+          if (stopId) return `id:${stopId}`;
+          const lat = Number(s?.stop_lat);
+          const lon = Number(s?.stop_lon);
+          if (Number.isFinite(lat) && Number.isFinite(lon)) return `c:${lat.toFixed(6)},${lon.toFixed(6)}`;
+          return null;
+        };
+
+        for (let idx = 0; idx < stops.length; idx++) {
+          const s = stops[idx];
+          const lat = Number(s?.stop_lat);
+          const lon = Number(s?.stop_lon);
+          if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+          const stopId = (s?.stop_id || "").trim();
+          const routes = Array.isArray(s?.routes) ? s.routes : [];
+          if (stopId && routes.length) stopRoutesCache.set(stopId, routes);
+          const primaryColor = "#ffd400";
+          const arrowColor = "#000000";
+          const key = keyForStop(s);
+          if (!key) continue;
+          nextKeys.add(key);
+
+          const angleRaw = Number(s?.direction_angle);
+          const local = Number(fallbackAngles[idx] || 0);
+          // Prefer payload (backend shape tangent); fallback to neighbor estimate only if missing.
+          const angleDeg = Number.isFinite(angleRaw) ? angleRaw : local;
+          const angCss = Number.isFinite(angleDeg) ? `${angleDeg}deg` : "0deg";
+          const existing = renderedStopsMap.get(key);
+
+          if (!existing) {
+            const iconHtml = `<div class="stop-marker stop--hidden" style="--stop-border:${primaryColor}; --stop-arrow:${arrowColor}; --stop-ang:${angCss}; background:#ffffff"><span class="stop-arrow"></span></div>`;
+            const icon = L.divIcon({ html: iconHtml, className: "stop-fade", iconSize: [1, 1], iconAnchor: [0, 0] });
+            const marker = L.marker([lat, lon], { icon });
+            marker.addTo(adapter.globalStopsLayer);
+
+            marker.bindPopup(
+              stopPopupHtml({ stopName: (s.stop_name || "Paragem"), stopId: (s.stop_id || ""), loading: true }),
+              { maxWidth: 320, className: "custom-popup" }
+            );
+
+            marker.on("popupopen", async () => {
+              const stopId = s?.stop_id || "";
+              const routes = await ensureStopRoutes(stopId);
+              marker.setPopupContent(stopPopupHtml({ stopName: (s.stop_name || "Paragem"), stopId, routes }));
+              try { wireStopPopupPills(marker.getPopup?.().getElement?.()); } catch (e) {}
+            });
+
+            marker.on("add", () => {
+              const el = marker.getElement?.();
+              if (!el) return;
+              const inner = el.querySelector?.(".stop-marker");
+              if (!inner) return;
+              requestAnimationFrame(() => requestAnimationFrame(() => {
+                try { inner.getBoundingClientRect(); } catch (e) {}
+                inner.classList.remove("stop--hidden");
+                inner.classList.add("stop--shown");
+              }));
+            });
+
+            renderedStopsMap.set(key, { marker, lat, lon, angleDeg: Number.isFinite(angleDeg) ? angleDeg : 0 });
+            continue;
+          }
+
+          if (Math.abs(existing.lat - lat) > 1e-8 || Math.abs(existing.lon - lon) > 1e-8) {
+            existing.marker.setLatLng([lat, lon]);
+            existing.lat = lat;
+            existing.lon = lon;
+          }
+
+          const nextAngle = Number.isFinite(angleDeg) ? angleDeg : 0;
+          if (existing.angleDeg !== nextAngle) {
+            const el = existing.marker.getElement?.();
+            const inner = el?.querySelector?.(".stop-marker");
+            if (inner) inner.style.setProperty("--stop-ang", `${nextAngle}deg`);
+            existing.angleDeg = nextAngle;
+          }
+        }
+
+        for (const [key, entry] of renderedStopsMap.entries()) {
+          if (nextKeys.has(key)) continue;
+          const el = entry?.marker?.getElement?.();
+          const inner = el?.querySelector?.(".stop-marker");
+          if (inner) {
+            inner.classList.remove("stop--shown");
+            inner.classList.add("stop--hidden");
+          }
+          setTimeout(() => {
+            try { adapter.globalStopsLayer.removeLayer(entry.marker); } catch (e) {}
+          }, STOP_REMOVE_DELAY_MS);
+          renderedStopsMap.delete(key);
+        }
+        return;
+      }
+
+      if (adapter instanceof MapLibreAdapter) {
+        if (belowLod) {
+          adapter.setGlobalStops({ stops: [] });
+          return;
+        }
+        adapter.setGlobalStops(payload);
+      }
+    }
+
+    async function refreshGlobalStops(force = false) {
+      if (!adapter) return;
+      if (!force && adapter?.isInteracting) return;
+      if (selectedRoute !== ROUTE_FILTER_ALL) {
+        // Clear when leaving global mode
+        cancelGlobalStopsFetch();
+        if (adapter instanceof LeafletAdapter && adapter.globalStopsLayer) fadeOutLeafletLayer(adapter.globalStopsLayer);
+        if (adapter instanceof MapLibreAdapter) adapter.setGlobalStops({ stops: [] });
+        globalStopsKey = null;
+        return;
+      }
+
+      const z = adapterZoom();
+      if (!Number.isFinite(z) || z < STOPS_MIN_ZOOM) {
+        cancelGlobalStopsFetch();
+        if (adapter instanceof LeafletAdapter && adapter.globalStopsLayer) fadeOutLeafletLayer(adapter.globalStopsLayer);
+        if (adapter instanceof MapLibreAdapter) {
+          // remove global stops by re-rendering empty list
+          renderGlobalStops({ stops: [] });
+        }
+        globalStopsKey = null;
+        return;
+      }
+
+      const b = adapterBounds();
+      if (!b) return;
+      const roundedBounds = roundBoundsForStops(b, GLOBAL_STOPS_KEY_PRECISION);
+      const effLimit = dynamicGlobalStopsLimit(z);
+      const key = JSON.stringify({ ...(roundedBounds || {}), z: Math.round(z * 10) / 10, limit: effLimit });
+      if (!force && globalStopsKey === key) return;
+      globalStopsKey = key;
+
+      const now = Date.now();
+      const cached = globalStopsCache.get(key);
+      if (!force && cached && (now - cached.ts) < 60_000) {
+        renderGlobalStops(cached.payload);
+        return;
+      }
+
+      cancelGlobalStopsFetch();
+      const controller = new AbortController();
+      globalStopsAbort = controller;
+      (async () => {
+        try {
+          if (adapter.ready instanceof Promise) await adapter.ready;
+          const payload = await fetchFromEndpoints(stopsBboxEndpoints(), {
+            min_lat: String(b.minLat),
+            max_lat: String(b.maxLat),
+            min_lon: String(b.minLon),
+            max_lon: String(b.maxLon),
+            limit: String(effLimit),
+            include_routes: "1"
+          }, { signal: controller.signal });
+          const stops = Array.isArray(payload) ? payload : (payload?.stops || []);
+          const data = { stops };
+          globalStopsCache.set(key, { ts: now, payload: data });
+          renderGlobalStops(data);
+        } catch (err) {
+          if (controller.signal.aborted) return;
+          console.warn("Falha ao carregar paragens (rede global):", err);
+        } finally {
+          if (globalStopsAbort === controller) globalStopsAbort = null;
+        }
+      })();
+    }
 
     function filterVehicles(list) {
       return list.filter(v => {
@@ -3076,6 +5160,8 @@
               lon: pos.longitude,
               routeId: trip.routeId ?? trip.tripId ?? "",
               linha: trip.routeId ?? "",
+              directionId: trip.directionId ?? trip.direction_id ?? null,
+              bearing: pos.bearing ?? pos.heading ?? pos.course ?? null,
               speed: Number.isFinite(speedMs) ? speedMs * 3.6 : 0,
               ts: veh.timestamp ?? pos.timestamp ?? Date.now()
             };
@@ -3095,6 +5181,8 @@
         lastVehicles = vehicles;
         updateRouteOptionsFromVehicles(vehicles);
         await renderVehicles();
+        refreshRouteOverlay(false).catch(() => {});
+        refreshGlobalStops(false).catch(() => {});
         updateStatus("online");
         refreshKpis().catch(() => {});
         clearAppError();
@@ -3106,6 +5194,8 @@
         lastVehicles = vehicles;
         updateRouteOptionsFromVehicles(vehicles);
         await renderVehicles();
+        refreshRouteOverlay(false).catch(() => {});
+        refreshGlobalStops(false).catch(() => {});
         updateStatus("offline");
         refreshKpis().catch(() => {});
       }
