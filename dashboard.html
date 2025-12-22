@@ -596,7 +596,7 @@
       padding: 28px;
       width: min(760px, 95vw);
       max-width: 760px;
-      max-height: 85vh;
+      max-height: 90vh;
       overflow: auto;
       box-shadow: var(--shadow-strong);
       position: relative;
@@ -624,12 +624,22 @@
     }
     .chart-overlay canvas {
       width: 100%;
-      height: 280px !important;
+      height: 440px !important;
+      min-height: 440px;
+      flex: 0 0 440px;
       display: block;
+      flex-shrink: 0;
+    }
+    @media (min-height: 900px) {
+      .chart-overlay canvas {
+        height: 480px !important;
+        min-height: 480px;
+        flex-basis: 480px;
+      }
     }
     .chart-overlay-extra { margin-top: 4px; }
     .overlay-subtitle { margin: 0 0 10px; font-size: 1rem; }
-    .overlay-table-wrapper { overflow: auto; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface-1); max-height: 320px; }
+    .overlay-table-wrapper { overflow: auto; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface-1); max-height: 260px; }
     .overlay-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
     .overlay-table th, .overlay-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border-strong); }
     .overlay-table th { background: var(--surface-2); position: sticky; top: 0; z-index: 1; }
@@ -1595,6 +1605,7 @@
     const CHARTS_REFRESH_INTERVAL_MS = 45_000;
     const CHARTS_DETAIL_PATH = "/historico/metricas";
     const CHARTS_DETAIL_ENDPOINTS = KPI_BASE_URLS.map(base => `${base}${CHARTS_DETAIL_PATH}`);
+    const VEHICLE_DAY_ENDPOINTS = KPI_BASE_URLS.map(base => `${base}/frota/resumo-diario/veiculos`);
     const HEALTH_ENDPOINTS = KPI_BASE_URLS.map(base => `${base}/health`);
 
     let selectedCategory = CATEGORY_FILTER_ALL;
@@ -2474,9 +2485,6 @@
 
     function buildVehicleQueryParams() {
       const params = {};
-      if (selectedCategory && selectedCategory !== CATEGORY_FILTER_ALL) {
-        params.categoria = selectedCategory;
-      }
       const routeCandidates = getRouteLineCandidates();
       if (routeCandidates.length > 0) {
         params.linha = routeCandidates[0];
@@ -2856,17 +2864,32 @@
       }
     }
 
-    function formatTimeOnly(value) {
-      if (!value) return "—";
+    function normalizeTimestampMs(value) {
+      if (value == null) return null;
+      const num = Number(value);
+      if (Number.isFinite(num)) {
+        const ms = num > 1e12 ? num : num * 1000; // seconds -> ms
+        const d = new Date(ms);
+        return Number.isFinite(d.getTime()) ? d.getTime() : null;
+      }
       const d = new Date(value);
-      if (!Number.isFinite(d.getTime())) return String(value);
+      return Number.isFinite(d.getTime()) ? d.getTime() : null;
+    }
+
+    function formatTimeOnly(value) {
+      const ts = normalizeTimestampMs(value);
+      if (!Number.isFinite(ts)) return "—";
+      const d = new Date(ts);
       return d.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" });
     }
 
     function formatKm(value) {
       const num = Number(value);
       if (!Number.isFinite(num)) return "—";
-      return (num / 1000).toFixed(1);
+      // Heurística: valores grandes tratam-se como metros, senão assume km.
+      if (num > 10_000) return (num / 1000).toFixed(1);
+      if (num > 1_000) return (num / 1000).toFixed(2);
+      return num.toFixed(2);
     }
 
     function statusDotHtml(isActive) {
@@ -2932,59 +2955,56 @@
         row.total_distance ??
         null;
       const trips = row.viagens ?? row.num_viagens ?? row.trips ?? row.total_trips ?? row.viagens_concluidas ?? null;
-      return { id, model, first, last, dist, trips };
+      const firstTs = normalizeTimestampMs(first);
+      const lastTs = normalizeTimestampMs(last);
+      return { id, model, first: firstTs, last: lastTs, dist, trips };
     }
 
     function renderVolumeOverlayTable() {
       if (!chartOverlayExtra || !chartOverlayVehicleRows) return;
-      const lineId = getPrimaryRouteIdForCharts();
-      if (!lineId) {
+      const lineIds = resolveOverlayVariantIds();
+      if (!lineIds.length) {
         chartOverlayExtra.hidden = true;
         return;
       }
       chartOverlayExtra.hidden = false;
       chartOverlayVehicleRows.innerHTML = `<tr><td colspan="7" class="overlay-empty">A carregar…</td></tr>`;
-      const now = new Date();
-      const isoDate = d => d.toISOString().split("T")[0];
-      const datesToTry = [isoDate(now)];
-      if (now.getHours() < 5) {
-        const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        datesToTry.push(isoDate(yesterday));
-      }
-      const tryDate = (dateList) => {
-        if (!dateList.length) {
+      const today = new Date().toISOString().split("T")[0];
+      const startMs = normalizeTimestampMs(`${today}T00:00:00`);
+      const endMs = startMs != null ? startMs + 24 * 60 * 60 * 1000 : null;
+      return Promise.all(lineIds.map(id => fetchRouteDayVehicles(id, today))).then(results => {
+        const rows = results.flat();
+        const normalized = rows.map(normalizeVehicleDayRow).filter(Boolean);
+        const unique = [];
+        const seen = new Set();
+        normalized.forEach(row => {
+          if (seen.has(row.id)) return;
+          if (startMs != null && endMs != null) {
+            const inRangeFirst = row.first != null && row.first >= startMs && row.first < endMs;
+            const inRangeLast = row.last != null && row.last >= startMs && row.last < endMs;
+            if (!inRangeFirst && !inRangeLast) return;
+          }
+          seen.add(row.id);
+          unique.push(row);
+        });
+        if (!unique.length) {
           chartOverlayVehicleRows.innerHTML = `<tr><td colspan="7" class="overlay-empty">Sem dados desta carreira para hoje.</td></tr>`;
           return;
         }
-        const dateStr = dateList.shift();
-        return fetchRouteDayVehicles(lineId, dateStr).then(rows => {
-          const normalized = rows.map(normalizeVehicleDayRow).filter(Boolean);
-          const unique = [];
-          const seen = new Set();
-          normalized.forEach(row => {
-            if (seen.has(row.id)) return;
-            seen.add(row.id);
-            unique.push(row);
-          });
-          if (!unique.length) {
-            return tryDate(dateList);
-          }
-          const html = unique.map(row => {
-            const active = row.last && (new Date(row.last).getTime() >= (Date.now() - 10 * 60 * 1000));
-            return `<tr>
-              <td>${escapeHtml(row.id || "—")}</td>
-              <td>${escapeHtml(row.model || "—")}</td>
-              <td>${escapeHtml(formatTimeOnly(row.first))}</td>
-              <td>${escapeHtml(formatTimeOnly(row.last))}</td>
-              <td>${escapeHtml(formatKm(row.dist))}</td>
-              <td>${escapeHtml(row.trips != null ? String(row.trips) : "—")}</td>
-              <td>${statusDotHtml(active)}</td>
-            </tr>`;
-          }).join("");
-          chartOverlayVehicleRows.innerHTML = html;
-        });
-      };
-      return tryDate(datesToTry).catch(err => {
+        const html = unique.map(row => {
+          const active = row.last != null && row.last >= (Date.now() - 10 * 60 * 1000);
+          return `<tr>
+            <td>${escapeHtml(row.id || "—")}</td>
+            <td>${escapeHtml(row.model || "—")}</td>
+            <td>${escapeHtml(formatTimeOnly(row.first))}</td>
+            <td>${escapeHtml(formatTimeOnly(row.last))}</td>
+            <td>${escapeHtml(formatKm(row.dist))}</td>
+            <td>${escapeHtml(row.trips != null ? String(row.trips) : "—")}</td>
+            <td>${statusDotHtml(active)}</td>
+          </tr>`;
+        }).join("");
+        chartOverlayVehicleRows.innerHTML = html;
+      }).catch(err => {
         console.warn("Falha ao carregar veículos do dia:", err);
         chartOverlayVehicleRows.innerHTML = `<tr><td colspan="7" class="overlay-empty">Erro ao carregar dados.</td></tr>`;
       });
@@ -3087,12 +3107,17 @@
 
     async function refreshCharts(force = false) {
       const routeCandidates = getRouteLineCandidates();
-      const chartLineCandidates = [...routeCandidates, null];
+      // Se uma carreira está selecionada, só tenta essa; caso contrário, usa o agregado (null).
+      const chartLineCandidates = routeCandidates.length ? [...routeCandidates] : [null];
       const now = Date.now();
       let found = false;
+      const selectionKey = JSON.stringify({
+        category: selectedCategory || null,
+        route: routeCandidates.join("|") || null
+      });
 
       if (!force) {
-        if (now - lastChartFetchTs < CHARTS_MIN_INTERVAL_MS && chartCache.summary) {
+        if (chartCache.selectionKey === selectionKey && now - lastChartFetchTs < CHARTS_MIN_INTERVAL_MS && chartCache.summary) {
           lastTrendSummary = { ...(chartCache.summary || {}), lineCandidate: chartCache.lineCandidate ?? null };
           lastTrendLineCandidate = chartCache.lineCandidate ?? null;
           updateTrendTimeline(lastTrendSummary.timeline || []);
@@ -3104,7 +3129,7 @@
         const params = buildTrendQueryParams(candidate);
         const paramsKey = JSON.stringify(params);
 
-        if (!force && paramsKey === chartCache.paramsKey && now - chartCache.timestamp < CHARTS_CACHE_TTL_MS && chartCache.summary) {
+        if (!force && chartCache.selectionKey === selectionKey && paramsKey === chartCache.paramsKey && now - chartCache.timestamp < CHARTS_CACHE_TTL_MS && chartCache.summary) {
           lastTrendSummary = { ...(chartCache.summary || {}), lineCandidate: chartCache.lineCandidate ?? candidate };
           lastTrendLineCandidate = chartCache.lineCandidate ?? candidate;
           updateTrendTimeline(lastTrendSummary.timeline || []);
@@ -3118,24 +3143,14 @@
         let paramsKeyUsed = paramsKey;
         const unfilteredSummary = summary;
         if (selectedCategory && selectedCategory !== CATEGORY_FILTER_ALL) {
-          let filtered = filterTrendSummaryByCategory(summary);
+          const filtered = filterTrendSummaryByCategory(summary);
           const filteredEmpty = (!filtered.timeline?.length) && (!filtered.rows?.length) && !filtered.kpi;
           const unfilteredHasData = (unfilteredSummary.timeline?.length) || (unfilteredSummary.rows?.length) || unfilteredSummary.kpi;
-          if (filteredEmpty && unfilteredHasData) {
-            const fallbackParams = { ...params };
-            delete fallbackParams.categoria;
-            paramsKeyUsed = JSON.stringify(fallbackParams);
-            const payloadFallback = await fetchFromEndpoints(CHARTS_ENDPOINTS, fallbackParams).catch(err => {
-              console.warn("Falha no fallback dos gráficos por categoria:", err);
-              return null;
-            });
-            filtered = filterTrendSummaryByCategory(normalizeTrendPayload(payloadFallback));
-          }
-          summary = filtered;
+          summary = (!filteredEmpty || !unfilteredHasData) ? filtered : unfilteredSummary;
         }
         if (!summary.timeline.length && !summary.rows.length && !summary.kpi) continue;
 
-        chartCache = { paramsKey: paramsKeyUsed, summary, timestamp: now, lineCandidate: candidate };
+        chartCache = { paramsKey: paramsKeyUsed, summary, timestamp: now, lineCandidate: candidate, selectionKey };
         lastChartFetchTs = now;
         lastTrendSummary = { ...summary, lineCandidate: candidate };
         lastTrendLineCandidate = candidate;
@@ -3146,7 +3161,7 @@
       }
 
       // If nothing worked for the current selection (route/category), clear charts instead of keeping stale data.
-      chartCache = { paramsKey: "", summary: null, timestamp: 0, lineCandidate: null };
+      chartCache = { paramsKey: "", summary: null, timestamp: 0, lineCandidate: null, selectionKey };
       lastTrendSummary = { timeline: [], kpi: null, rows: [], lineCandidate: null };
       lastTrendLineCandidate = null;
       updateTrendTimeline([]);
@@ -3177,6 +3192,13 @@
           ? Number.isFinite(entry.volume) ? Number(entry.volume.toFixed(0)) : null
           : Number.isFinite(entry.vel15m) ? Number(entry.vel15m.toFixed(1)) : null
       );
+      const numericValues = data.filter(v => Number.isFinite(v));
+      const suggestedMax = numericValues.length ? Math.max(...numericValues) * 1.12 : undefined;
+      const yTickFormatter = (value) => {
+        if (type === "volume") return Math.round(value).toString();
+        const num = Number(value);
+        return Number.isFinite(num) ? num.toFixed(1) : value;
+      };
 	      const color = type === "volume" ? "#f59f00" : "#ff4b4b";
 	      const fill = type === "volume" ? "rgba(245, 159, 0, 0.3)" : "transparent";
 	      const title = type === "volume" ? "Volume da Frota" : "Velocidade Comercial";
@@ -3217,21 +3239,37 @@
             options: {
               responsive: true,
               maintainAspectRatio: false,
+              layout: { padding: { top: 6, right: 10, bottom: 6, left: 8 } },
               interaction: { mode: "nearest", intersect: false, axis: "x" },
               hover: { mode: "nearest", intersect: false },
               plugins: {
                 legend: { display: false },
-                tooltip: { mode: "nearest", intersect: false }
+                tooltip: {
+                  mode: "nearest",
+                  intersect: false,
+                  titleFont: { size: 12, weight: "700" },
+                  bodyFont: { size: 12, weight: "600" },
+                  padding: 10
+                }
               },
               scales: {
                 x: {
                   grid: { display: false },
-                  ticks: { color: axis, maxTicksLimit: 8, autoSkip: true, maxRotation: 0 }
+                  ticks: { color: axis, maxTicksLimit: 6, autoSkip: true, autoSkipPadding: 16, maxRotation: 0, minRotation: 0 }
                 },
                 y: {
                   grid: { color: grid },
-                  ticks: { color: axis, beginAtZero: true, padding: 8, maxTicksLimit: 6 },
-                  min: 0
+                  ticks: {
+                    color: axis,
+                    beginAtZero: true,
+                    padding: 12,
+                    maxTicksLimit: 6,
+                    autoSkipPadding: 12,
+                    font: { size: 13, weight: "700" },
+                    callback: yTickFormatter
+                  },
+                  min: 0,
+                  suggestedMax
                 }
               }
             }
@@ -5573,7 +5611,7 @@
     function routeDetailEndpoints(routeId, dateStr) {
       const encoded = encodeURIComponent(String(routeId || ""));
       const day = dateStr || new Date().toISOString().split("T")[0];
-      return CHARTS_DETAIL_ENDPOINTS.map(base => `${base}?date=${encodeURIComponent(day)}&line_id=${encoded}`);
+      return VEHICLE_DAY_ENDPOINTS.map(base => `${base}?date=${encodeURIComponent(day)}&line_id=${encoded}`);
     }
 
     async function fetchRouteOverlayPayload(routeIds) {
