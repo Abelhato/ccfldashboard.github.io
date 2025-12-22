@@ -466,11 +466,19 @@
 	    }
 	    .kpi-card .kpi-speed.has-unit::after {
 	      content: "km/h";
-	      font-size: 0.72em;
-	      font-weight: 700;
-	      color: var(--text-muted);
-	      opacity: 0.75;
-	    }
+      font-size: 0.72em;
+      font-weight: 700;
+      color: var(--text-muted);
+      opacity: 0.75;
+    }
+    body.theme-dark .chart-card-header span,
+    body.theme-auto .chart-card-header span {
+      color: #f9fafb;
+    }
+    body.theme-dark .chart-card .chart-card-help,
+    body.theme-auto .chart-card .chart-card-help {
+      color: #f9fafb;
+    }
     .kpi-card .kpi-label,
     .kpi-card .kpi-delta,
     .kpi-card .kpi-meta {
@@ -557,6 +565,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+    body.theme-dark .chart-card,
+    body.theme-auto .chart-card {
+      background: rgba(15, 23, 42, 0.82);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+    body.theme-dark .chart-card-header,
+    body.theme-auto .chart-card-header {
+      color: #f9fafb;
     }
     .chart-card canvas {
       width: 100% !important;
@@ -1048,7 +1065,7 @@
       position: absolute;
       left: 12px;
       right: 12px;
-      top: 14px;
+      top: 28px;
       z-index: 1600;
       background: var(--surface-1);
       border: 1px solid var(--border-strong);
@@ -1077,19 +1094,29 @@
       font-variant-numeric: tabular-nums;
     }
     .mobile-stop-card__close {
-      border: none;
-      background: var(--accent);
-      color: #0f172a;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      font-size: 1rem;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-2);
+      color: var(--text-primary);
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      font-size: 0.96rem;
       cursor: pointer;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.16);
+      box-shadow: var(--shadow-strong);
     }
     body.mobile-stop-open .kpi-panel,
     body.mobile-stop-open .kpi-floating-context {
       display: none !important;
+    }
+
+    @media (max-width: 900px) {
+      body:not(.sidebar-collapsed) .maplibregl-popup,
+      body:not(.sidebar-collapsed) .leaflet-popup,
+      body:not(.sidebar-collapsed) .custom-popup,
+      body:not(.sidebar-collapsed) .mobile-stop-card,
+      body:not(.sidebar-collapsed) .kpi-floating-context {
+        display: none !important;
+      }
     }
     .route-preview {
       position: fixed;
@@ -1705,8 +1732,9 @@
             <div class="mobile-stop-card__title" id="mobile-stop-title">Paragem</div>
             <div class="mobile-stop-card__meta" id="mobile-stop-meta">—</div>
           </div>
-          <button class="mobile-stop-card__close" id="mobile-stop-close" type="button" aria-label="Fechar paragem">✕</button>
+          <button class="mobile-stop-card__close" id="mobile-stop-close" type="button" aria-label="Fechar paragem">×</button>
         </div>
+        <div class="mobile-stop-card__pills" id="mobile-stop-pills"></div>
         <div class="stop-schedule" id="mobile-stop-schedule"></div>
       </div>
       <button id="sidebar-toggle" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="Mostrar filtros">☰</button>
@@ -7159,17 +7187,23 @@
       `;
     }
 
-    function showMobileStopCard({ stopName, stopId, schedule }) {
+    function showMobileStopCard({ stopName, stopId, schedule, routes }) {
       const card = document.getElementById("mobile-stop-card");
       const title = document.getElementById("mobile-stop-title");
       const meta = document.getElementById("mobile-stop-meta");
       const schedEl = document.getElementById("mobile-stop-schedule");
+      const pillsEl = document.getElementById("mobile-stop-pills");
       if (!card || !title || !meta || !schedEl) return;
       title.textContent = stopName || "Paragem";
       meta.textContent = stopId || "";
       schedEl.innerHTML = renderStopSchedule(schedule || { status: "loading" });
+      if (pillsEl) pillsEl.innerHTML = routePillsHtml(routes || []);
       card.classList.add("visible");
       document.body.classList.add("mobile-stop-open");
+      const panel = document.getElementById("kpi-panel");
+      if (panel) panel.style.display = "none";
+      const floating = document.getElementById("kpi-floating-context");
+      if (floating) floating.style.display = "none";
     }
 
     function hideMobileStopCard() {
@@ -7177,6 +7211,13 @@
       if (card) card.classList.remove("visible");
       document.body.classList.remove("mobile-stop-open");
       activeStopPopup = null;
+      if (adapter?.map && adapter.map.closePopup) {
+        try { adapter.map.closePopup(); } catch (e) {}
+      }
+      const panel = document.getElementById("kpi-panel");
+      if (panel) panel.style.display = "";
+      const floating = document.getElementById("kpi-floating-context");
+      if (floating) floating.style.display = "";
     }
 
     const mobileStopClose = document.getElementById("mobile-stop-close");
@@ -7226,7 +7267,7 @@
       }
       applyStopPopupContent(target, { stopName, stopId, routes, loading: false, schedule: scheduleState });
       if (isMobileViewport()) {
-        showMobileStopCard({ stopName, stopId, schedule: scheduleState });
+        showMobileStopCard({ stopName, stopId, schedule: scheduleState, routes });
       }
       activeStopPopup = { stopId, stopName, target };
     }
