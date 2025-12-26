@@ -76,8 +76,8 @@
         --map-bg: #111827;
         --toggle-bg: rgba(255, 255, 255, 0.08);
         --toggle-color: #f9fafb;
-        --surface-1: rgba(15, 23, 42, 0.9);
-        --surface-2: rgba(15, 23, 42, 0.82);
+        --surface-1: rgb(30, 41, 59);
+        --surface-2: rgb(15, 23, 42);
         --border-strong: rgba(255, 255, 255, 0.12);
         --shadow-strong: 0 24px 50px rgba(0, 0, 0, 0.32);
         --chart-axis-color: #f9fafb;
@@ -954,22 +954,39 @@
     }
 
     /* Estilos do Popup */
-    .custom-popup .leaflet-popup-content-wrapper { background: transparent; padding: 0; overflow: hidden; border-radius: 6px; }
+    .custom-popup .leaflet-popup-content-wrapper {
+      background: transparent;
+      padding: 0;
+      overflow: hidden;
+      border-radius: 6px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3); /* Add a stronger shadow */
+    }
+    .custom-popup .leaflet-popup-tip {
+      background: var(--surface-2); /* Matches the popup body color */
+    }
     .custom-popup .leaflet-popup-content { margin: 0; width: 200px !important; }
     
     .pop-header { 
       padding: 10px 12px; 
-      color: white; 
       font-weight: bold; 
       display: flex; 
       justify-content: space-between; 
       align-items: center;
       gap: 10px;
+      background: var(--surface-1);
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border-strong);
     }
     .pop-header__left { display: flex; align-items: center; gap: 8px; min-width: 0; }
     .pop-title { font-size: 0.96rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .pop-header__actions { display: inline-flex; align-items: center; gap: 8px; }
-    .pop-body { padding: 12px; font-size: 13px; color: #444; line-height: 1.5; }
+    .pop-body {
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.5;
+      background: var(--surface-2);
+      color: var(--text-primary);
+    }
 
     /* MapLibre popup parity */
     .custom-popup .maplibregl-popup-content { background: transparent; padding: 0; margin: 0; width: 220px !important; overflow: hidden; border-radius: 8px; box-shadow: 0 3px 14px rgba(0,0,0,0.2); }
@@ -1076,12 +1093,7 @@
       color: var(--text-muted);
       padding: 6px 2px;
     }
-    body.theme-dark .stop-schedule__row,
-    body.theme-auto .stop-schedule__row {
-      background: rgba(255, 255, 255, 0.06);
-      border-color: rgba(255, 255, 255, 0.12);
-      color: #f8fafc;
-    }
+    /* This rule was moved into the media query below to fix a theme bug */
     .mobile-stop-card {
       position: absolute;
       left: 12px;
@@ -1291,6 +1303,16 @@
         background: rgba(255, 255, 255, 0.06);
         border-color: rgba(255, 255, 255, 0.12);
         color: #f8fafc;
+      }
+      body.theme-dark .pop-header,
+      body.theme-auto .pop-header {
+        background: var(--surface-1);
+        color: var(--text-primary);
+      }
+      body.theme-dark .pop-body,
+      body.theme-auto .pop-body {
+        background: var(--surface-2);
+        color: var(--text-primary);
       }
     }
 
