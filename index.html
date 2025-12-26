@@ -93,26 +93,27 @@
       overflow: hidden;
     }
 
-	    #sidebar {
-	      position: absolute;
-	      top: 0;
-	      left: 0;
-	      bottom: 0;
+    #sidebar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
       width: clamp(220px, 18vw, 280px);
       max-width: 90vw;
       padding: 24px 26px 30px;
       background: var(--sidebar-bg);
       border-right: 1px solid var(--sidebar-border);
-      box-shadow: 12px 0 36px rgba(5, 10, 25, 0.18);
-	      display: flex;
-	      flex-direction: column;
-	      gap: 22px;
-	      overflow-y: auto;
-	      overscroll-behavior: contain;
-	      -webkit-overflow-scrolling: touch;
-		      z-index: 1500;
-	      transition: transform 0.25s ease, opacity 0.25s ease;
-	    }
+      box-shadow: 24px 0 48px rgba(3, 7, 18, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      z-index: 4500;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      backdrop-filter: blur(20px);
+    }
 
 	    .sidebar-header {
 	      display: flex;
@@ -131,12 +132,12 @@
       margin: 0;
     }
 
-	    #sidebar-close,
-	    #sidebar-toggle {
-	      border: none;
-	      border-radius: 50%;
-      background: var(--accent);
-      color: #0f172a;
+    #sidebar-close,
+    #sidebar-toggle {
+      border: 1px solid var(--border-strong);
+      border-radius: 50%;
+      background: var(--surface-1);
+      color: var(--text-primary);
       width: 40px;
       height: 40px;
       font-size: 1.2rem;
@@ -144,9 +145,9 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-	      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-	    }
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
 
 	    #sidebar-close {
 	      position: absolute;
@@ -155,19 +156,11 @@
 		      z-index: 1601;
 	    }
 
-    body.theme-dark #sidebar-close,
-    body.theme-auto #sidebar-close,
-    body.theme-dark #sidebar-toggle,
-    body.theme-auto #sidebar-toggle {
-      background: rgba(249, 250, 251, 0.92);
-      color: #0f172a;
-    }
-
     #sidebar-close:hover,
     #sidebar-toggle:hover {
       transform: scale(1.08);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
-      opacity: 0.9;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.32);
+      opacity: 0.94;
     }
 
     #sidebar p {
@@ -205,12 +198,25 @@
       transition: box-shadow 0.2s, border-color 0.2s;
     }
 
+    #route-filter {
+      font-size: 16px;
+      line-height: 1.35;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+      font-weight: 500;
+    }
+
     body.theme-dark .sidebar-section select,
-    body.theme-dark .sidebar-section input[type="text"],
-    body.theme-auto .sidebar-section select,
-    body.theme-auto .sidebar-section input[type="text"] {
+    body.theme-dark .sidebar-section input[type="text"] {
       background: rgba(10, 15, 28, 0.8);
       color: #f8fafc;
+    }
+    @media (prefers-color-scheme: dark) {
+      body.theme-auto .sidebar-section select,
+      body.theme-auto .sidebar-section input[type="text"] {
+        background: rgba(10, 15, 28, 0.8);
+        color: #f8fafc;
+      }
     }
 
     .sidebar-section select:focus,
@@ -271,13 +277,15 @@
       border-radius: 12px;
       border: 1px solid var(--border-strong);
       padding: 10px 12px;
-      font-size: 0.95rem;
+      font-size: 16px;
+      line-height: 1.4;
       font-weight: 600;
       color: var(--text-primary);
       background: var(--surface-1);
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
     }
-    body.theme-dark .floating-route-input,
-    body.theme-auto .floating-route-input {
+    body.theme-dark .floating-route-input {
       background: rgba(10, 15, 28, 0.82);
       color: #f8fafc;
     }
@@ -310,15 +318,25 @@
       background: rgba(15, 23, 42, 0.7);
     }
     body.theme-dark .floating-route-preview .preview-item:hover { background: rgba(255, 255, 255, 0.06); }
+    @media (prefers-color-scheme: dark) {
+      body.theme-auto .floating-route-input {
+        background: rgba(10, 15, 28, 0.82);
+        color: #f8fafc;
+      }
+      body.theme-auto .floating-search {
+        background: var(--sidebar-bg);
+      }
+      body.theme-auto .floating-search .floating-route-input {
+        background: var(--surface-1);
+      }
+    }
     @media (min-width: 901px) {
       .floating-search.visible { display: none !important; }
     }
-    body.theme-dark .floating-search,
-    body.theme-auto .floating-search {
+    body.theme-dark .floating-search {
       background: var(--sidebar-bg);
     }
-    body.theme-dark .floating-search .floating-route-input,
-    body.theme-auto .floating-search .floating-route-input {
+    body.theme-dark .floating-search .floating-route-input {
       background: var(--surface-1);
     }
     @media (max-width: 900px) {
@@ -481,12 +499,10 @@
       color: var(--text-muted);
       opacity: 0.75;
     }
-    body.theme-dark .chart-card-header span,
-    body.theme-auto .chart-card-header span {
+    body.theme-dark .chart-card-header span {
       color: #f9fafb;
     }
-    body.theme-dark .chart-card .chart-card-help,
-    body.theme-auto .chart-card .chart-card-help {
+    body.theme-dark .chart-card .chart-card-help {
       color: #f9fafb;
     }
     .kpi-card .kpi-label,
@@ -540,16 +556,82 @@
 
     .charts-section {
       margin-top: 12px;
+      position: relative;
+      border-top: 1px solid rgba(15, 23, 42, 0.1);
+      padding-top: 18px;
+    }
+    .charts-section__header {
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .charts-section__title {
+      margin: 0;
+    }
+    .sr-only {
+      position: absolute !important;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+    #chart-section-toggle {
+      border: 1px solid var(--border-strong);
+      background: var(--surface-1);
+      color: var(--text-primary);
+      border-radius: 999px;
+      padding: 10px 16px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 1rem;
+      text-transform: none;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    body.theme-dark #chart-section-toggle {
+      background: var(--surface-2);
+      color: var(--text-primary);
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
+    }
+    #chart-section-toggle:hover {
+      transform: translateY(-1px);
+      border-color: rgba(15, 23, 42, 0.3);
+    }
+    .chart-toggle-label {
+      margin-right: 8px;
+    }
+    .chart-toggle-arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: transform 0.25s ease;
+    }
+    #chart-section-toggle[aria-expanded="false"] .chart-toggle-arrow {
+      transform: rotate(180deg);
     }
     .charts-section h2 {
       font-size: 1rem;
       margin-bottom: 8px;
       color: var(--text-primary);
     }
+    .chart-grid-wrapper {
+      overflow: hidden;
+      max-height: 1000px;
+      transition: max-height 0.4s ease, opacity 0.4s ease;
+    }
     .chart-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 12px;
+      transition: opacity 0.4s ease;
     }
     .chart-card {
       border-radius: 12px;
@@ -576,19 +658,40 @@
       justify-content: space-between;
       align-items: center;
     }
-    body.theme-dark .chart-card,
-    body.theme-auto .chart-card {
+    body.theme-dark .chart-card {
       background: rgba(15, 23, 42, 0.82);
       border-color: rgba(255, 255, 255, 0.12);
     }
-    body.theme-dark .chart-card-header,
-    body.theme-auto .chart-card-header {
+    body.theme-dark .chart-card-header {
       color: #f9fafb;
+    }
+    @media (prefers-color-scheme: dark) {
+      body.theme-auto .chart-card {
+        background: rgba(15, 23, 42, 0.82);
+        border-color: rgba(255, 255, 255, 0.12);
+      }
+      body.theme-auto .chart-card-header {
+        color: #f9fafb;
+      }
+      body.theme-auto .chart-card-header span {
+        color: #f9fafb;
+      }
+      body.theme-auto .chart-card .chart-card-help {
+        color: #f9fafb;
+      }
     }
     .chart-card canvas {
       width: 100% !important;
       height: 104px !important;
       display: block;
+    }
+    .charts-section--collapsed .chart-grid {
+      opacity: 0;
+    }
+    .charts-section--collapsed .chart-grid-wrapper {
+      max-height: 0;
+      opacity: 0;
+      pointer-events: none;
     }
 	    .chart-card-help {
 	      font-size: 1.05rem;
@@ -608,7 +711,7 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
-      z-index: 2200;
+      z-index: 5500;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.25s ease;
@@ -964,7 +1067,7 @@
     .custom-popup .leaflet-popup-tip {
       background: var(--surface-2); /* Matches the popup body color */
     }
-    .custom-popup .leaflet-popup-content { margin: 0; width: 200px !important; }
+    .custom-popup .leaflet-popup-content { margin: 0; min-width: 320px; max-width: min(720px, 96vw); width: min(720px, 96vw); }
     
     .pop-header { 
       padding: 10px 12px; 
@@ -976,6 +1079,8 @@
       background: var(--surface-1);
       color: var(--text-primary);
       border-bottom: 1px solid var(--border-strong);
+      position: relative;
+      padding-right: 60px;
     }
     .pop-header__left { display: flex; align-items: center; gap: 8px; min-width: 0; }
     .pop-title { font-size: 0.96rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -987,9 +1092,25 @@
       background: var(--surface-2);
       color: var(--text-primary);
     }
+    .pop-body__info {
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
 
     /* MapLibre popup parity */
-    .custom-popup .maplibregl-popup-content { background: transparent; padding: 0; margin: 0; width: 220px !important; overflow: hidden; border-radius: 8px; box-shadow: 0 3px 14px rgba(0,0,0,0.2); }
+    .custom-popup .maplibregl-popup-content {
+      background: transparent;
+      padding: 0;
+      margin: 0;
+      min-width: 320px;
+      width: fit-content;
+      max-width: min(460px, 96vw);
+      overflow: hidden;
+      border-radius: 8px;
+      box-shadow: 0 3px 14px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
     .custom-popup .maplibregl-popup-tip { display: none; }
 
     /* Stop popup pills */
@@ -998,6 +1119,19 @@
       background: var(--surface-1);
       -webkit-backdrop-filter: blur(8px);
       backdrop-filter: blur(8px);
+      --stop-popup-pill-count: 6;
+      --stop-popup-pill-gap: 6px;
+      --stop-popup-pill-base: 52px;
+      --stop-popup-inner-padding: 20px;
+      --stop-popup-width-target: calc(
+        var(--stop-popup-pill-count) * var(--stop-popup-pill-base) +
+        (var(--stop-popup-pill-count) - 1) * var(--stop-popup-pill-gap) +
+        var(--stop-popup-inner-padding)
+      );
+      width: clamp(320px, var(--stop-popup-width-target), min(460px, 96vw));
+      min-width: 320px;
+      max-width: min(460px, 96vw);
+      box-sizing: border-box;
     }
     .stop-popup__title {
       font-weight: 800;
@@ -1023,7 +1157,7 @@
       margin-top: 8px;
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: var(--stop-popup-pill-gap, 6px);
     }
     .stop-schedule {
       margin-top: 8px;
@@ -1032,9 +1166,11 @@
       gap: 6px;
     }
     .stop-schedule__row {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
       padding: 2px 4px;
       border-radius: 10px;
       background: rgba(15, 23, 42, 0.04);
@@ -1043,7 +1179,27 @@
       font-weight: 700;
       color: var(--text-primary);
       width: 100%;
+      min-width: 0;
       line-height: 1.1;
+      box-sizing: border-box;
+    }
+    .stop-schedule__info {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      flex-wrap: wrap;
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: calc(100% - 56px);
+    }
+    @media (min-width: 900px) {
+      .stop-popup {
+        width: clamp(340px, var(--stop-popup-width-target), 460px);
+        max-width: 460px;
+      }
+      .stop-schedule__info {
+        max-width: calc(100% - 64px);
+      }
     }
     .stop-schedule__list {
       display: flex;
@@ -1052,13 +1208,17 @@
       max-height: 200px;
       overflow-y: auto;
       padding-right: 2px;
+      width: 100%;
+      box-sizing: border-box;
     }
     .stop-schedule__time {
       font-variant-numeric: tabular-nums;
       min-width: 44px;
       margin-left: auto;
       text-align: right;
-      padding-right: 4px;
+      padding-right: 0;
+      flex-shrink: 0;
+      white-space: nowrap;
     }
     .stop-schedule__eta {
       font-size: 0.76rem;
@@ -1066,11 +1226,11 @@
       font-weight: 600;
     }
     .pill--tiny {
-      padding: 1px 4px;
-      font-size: 0.72rem;
+      padding: 1px 3px;
+      font-size: 0.68rem;
       border-radius: 999px;
       line-height: 1;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.03em;
     }
     .route-pill--active {
       box-shadow: 0 0 0 2px rgba(245, 159, 0, 0.3);
@@ -1086,6 +1246,11 @@
       font-size: 0.76rem;
       color: var(--text-muted);
       font-weight: 600;
+      flex: 1 1 auto;
+      min-width: 0;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
     .stop-schedule__empty,
     .stop-schedule__loading {
@@ -1158,7 +1323,7 @@
       }
     }
     .route-preview {
-      position: fixed;
+      position: absolute;
       display: grid;
       gap: 6px;
       max-height: 240px;
@@ -1169,6 +1334,10 @@
       border: 1px solid var(--border-strong);
       box-shadow: var(--shadow-strong);
       z-index: 2200;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 100%;
+      box-sizing: border-box;
     }
     .route-preview.hidden { display: none; }
     .route-preview .preview-item {
@@ -1193,7 +1362,7 @@
       background: rgba(15, 23, 42, 0.7);
     }
     body.theme-dark .route-preview .preview-item:hover { background: rgba(255, 255, 255, 0.06); }
-    .route-input-wrapper { position: relative; width: 100%; }
+    .route-input-wrapper { position: relative; width: 100%; overflow: visible; }
     .route-input-wrapper input {
       width: 100%;
       box-sizing: border-box;
@@ -1202,7 +1371,10 @@
 
     /* Ensure sidebar overlays tooltips/popups from the map */
     .leaflet-pane.leaflet-tooltip-pane { z-index: 900 !important; }
-    .maplibregl-popup { z-index: 900 !important; }
+    .maplibregl-popup {
+      z-index: 900 !important;
+      width: auto !important;
+    }
     .route-selected-pill {
       position: absolute;
       inset: 0;
@@ -1498,8 +1670,31 @@
       border-color: rgba(255, 255, 255, 0.12);
       color: #f8fafc;
     }
-    .custom-popup .maplibregl-popup-close-button { color: white; font-size: 16px; padding: 6px 10px; z-index: 10; }
-    .custom-popup .maplibregl-popup-close-button:hover { background: rgba(0,0,0,0.1); }
+    .custom-popup .maplibregl-popup-close-button {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      z-index: 20;
+      transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease;
+    }
+    .custom-popup .maplibregl-popup-close-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
 
     /* Leaflet Tooltips (ícones) */
     .veh-label {
@@ -1708,6 +1903,15 @@
 		        left: calc(12px + env(safe-area-inset-left));
 		      }
 
+		      .sidebar-section select,
+		      .sidebar-section input[type="text"] {
+		        padding: 8px 10px;
+		        font-size: 0.86rem;
+		      }
+		      .sidebar-section label {
+		        font-size: 0.72rem;
+		      }
+
 		      body:not(.sidebar-collapsed) .kpi-panel,
 		      body:not(.sidebar-collapsed) .kpi-floating-context {
 		        opacity: 0;
@@ -1738,31 +1942,39 @@
             <span id="route-selected-text"></span>
             <button id="route-clear" class="route-clear" type="button" aria-label="Voltar à Rede Global">✕</button>
           </div>
+          <div id="route-preview" class="route-preview hidden" role="listbox" aria-label="Sugestões de carreiras"></div>
         </div>
         <datalist id="route-filter-options"></datalist>
-        <div id="route-preview" class="route-preview hidden" role="listbox" aria-label="Sugestões de carreiras"></div>
       </div>
       <div class="sidebar-section hidden" id="variant-filter-group">
         <label for="variant-filter">🔀 Variante</label>
         <select id="variant-filter"></select>
       </div>
       <section class="charts-section" aria-label="Tendências da frota">
-        <h2>📈 Tendências rápidas</h2>
-        <div class="chart-grid">
-	          <button class="chart-card" id="chart-speed-card" type="button">
-	            <div class="chart-card-header">
-	              <span>Velocidade Comercial</span>
-	            </div>
-	            <canvas id="chart-speed-preview"></canvas>
-	            <span class="chart-card-help" aria-hidden="true">⤢</span>
-	          </button>
-	          <button class="chart-card" id="chart-volume-card" type="button">
-	            <div class="chart-card-header">
-	              <span>Volume da Frota</span>
-	            </div>
-	            <canvas id="chart-volume-preview"></canvas>
-	            <span class="chart-card-help" aria-hidden="true">⤢</span>
-	          </button>
+        <div class="charts-section__header">
+          <h2 class="charts-section__title sr-only">Tendências rápidas</h2>
+          <button id="chart-section-toggle" type="button" aria-label="Ocultar ou mostrar tendências rápidas" aria-expanded="true">
+            <span class="chart-toggle-label">📈 Tendências rápidas</span>
+            <span class="chart-toggle-arrow" aria-hidden="true">⌄</span>
+          </button>
+        </div>
+        <div class="chart-grid-wrapper">
+          <div class="chart-grid" id="chart-grid">
+	            <button class="chart-card" id="chart-speed-card" type="button">
+	              <div class="chart-card-header">
+	                <span>Velocidade Comercial</span>
+	              </div>
+	              <canvas id="chart-speed-preview"></canvas>
+	              <span class="chart-card-help" aria-hidden="true">⤢</span>
+	            </button>
+	            <button class="chart-card" id="chart-volume-card" type="button">
+	              <div class="chart-card-header">
+	                <span>Volume da Frota</span>
+	              </div>
+	              <canvas id="chart-volume-preview"></canvas>
+	              <span class="chart-card-help" aria-hidden="true">⤢</span>
+	            </button>
+          </div>
         </div>
       </section>
       <p class="sidebar-note">
@@ -1881,6 +2093,7 @@
     const ANIMATION_MS = 1000;
     const ACTIVE_SECONDS = 300;
     const INACTIVE_SECONDS = 600;
+    const MOBILE_POPUP_BREAKPOINT = 900;
 
     const SHAPES_MOCK = {
       "type": "FeatureCollection",
@@ -2043,6 +2256,74 @@
     const CHARTS_DETAIL_ENDPOINTS = KPI_BASE_URLS.map(base => `${base}${CHARTS_DETAIL_PATH}`);
     const VEHICLE_DAY_ENDPOINTS = KPI_BASE_URLS.map(base => `${base}/frota/resumo-diario/veiculos`);
     const HEALTH_ENDPOINTS = KPI_BASE_URLS.map(base => `${base}/health`);
+    const FLEET_MODEL_CSV_URL = new URL("frota.csv", location.href);
+    const FLEET_MODEL_CSV_FALLBACK = `ID_Inicio,ID_Fim,Modelo,Tipo,Categoria
+501,510,Elétricos Articulados SIEMENS,Elétrico,Articulado
+601,615,Elétricos Articulados CAF,Elétrico,Articulado
+541,585,Elétricos Remodelados,Elétrico,Remodelado
+201,240,Mini Mercedes Sprinter,Autocarro,Mini
+251,278,Mini MAN,Autocarro,Mini
+401,414,Mini Karsan,Autocarro,Mini
+1700,1799,Standard Volvo,Autocarro,Standard
+2201,2500,Standard MAN,Autocarro,Standard
+2601,2820,Standard MAN GNC,Autocarro,Standard
+2821,2844,Articulado MAN,Autocarro,Articulado
+2941,2997,Médio MAN,Autocarro,Médio
+4600,4699,Articulado Mercedes,Autocarro,Articulado
+4800,4899,Articulado Mercedes GNC,Autocarro,Articulado
+5000,5999,Standard Scania,Autocarro,Standard
+6000,6999,Standard Caetano,Autocarro,Standard`;
+    let fleetModelRanges = [];
+    let fleetModelLoadPromise = null;
+
+    function parseFleetModelCsv(text) {
+      if (!text) return;
+      const cleaned = text.replace(/\r/g, "\n");
+      const lines = cleaned.split("\n").map(line => line.trim()).filter(Boolean);
+      if (lines.length <= 1) return;
+      const ranges = [];
+      for (let i = 1; i < lines.length; i += 1) {
+        const line = lines[i];
+        if (!line) continue;
+        const parts = line.split(",");
+        if (parts.length < 3) continue;
+        const start = Number.parseInt(parts[0], 10);
+        const end = Number.parseInt(parts[1], 10);
+        const model = (parts[2] || "").trim();
+        if (!Number.isFinite(start) || !Number.isFinite(end) || !model) continue;
+        ranges.push({ start, end, model });
+      }
+      if (ranges.length) {
+        fleetModelRanges = ranges;
+      }
+    }
+
+    function loadFleetModelRanges() {
+      if (!fleetModelRanges.length) parseFleetModelCsv(FLEET_MODEL_CSV_FALLBACK);
+      if (fleetModelLoadPromise) return fleetModelLoadPromise;
+      fleetModelLoadPromise = fetch(FLEET_MODEL_CSV_URL, { cache: "no-store" })
+        .then(resp => resp.ok ? resp.text() : "")
+        .then(text => parseFleetModelCsv(text))
+        .catch(err => {
+          console.warn("Falha ao carregar frota.csv", err);
+        });
+      return fleetModelLoadPromise;
+    }
+
+    function fleetModelLabelForId(value) {
+      if (!fleetModelRanges.length) return "";
+      const candidate = value == null ? "" : String(value).trim().replace(/^#/, "");
+      const numericId = Number.parseInt(candidate, 10);
+      if (!Number.isFinite(numericId)) return "";
+      for (const range of fleetModelRanges) {
+        if (numericId >= range.start && numericId <= range.end) {
+          return range.model;
+        }
+      }
+      return "";
+    }
+
+    loadFleetModelRanges();
 
     let selectedCategory = CATEGORY_FILTER_ALL;
     let selectedRoute = ROUTE_FILTER_ALL;
@@ -2101,6 +2382,22 @@
     const floatingRouteInput = document.getElementById("floating-route-input");
     const floatingRoutePreview = document.getElementById("floating-route-preview");
     const chartOverlayClose = document.getElementById("chart-overlay-close");
+    const chartSectionToggle = document.getElementById("chart-section-toggle");
+    const chartsSection = document.querySelector(".charts-section");
+
+    const setChartSectionExpanded = expanded => {
+      if (!chartSectionToggle || !chartsSection) return;
+      chartSectionToggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+      chartsSection.classList.toggle("charts-section--collapsed", !expanded);
+    };
+    if (chartSectionToggle) {
+      const initialExpanded = chartSectionToggle.getAttribute("aria-expanded") !== "false";
+      setChartSectionExpanded(initialExpanded);
+      chartSectionToggle.addEventListener("click", () => {
+        const currentlyExpanded = chartSectionToggle.getAttribute("aria-expanded") !== "false";
+        setChartSectionExpanded(!currentlyExpanded);
+      });
+    }
     let sidebarCollapsed = false;
     let categoryKpisCache = { timestamp: 0, data: [] };
     let routeKpisCache = { timestamp: 0, key: "", row: null };
@@ -2124,9 +2421,10 @@
     });
 
     function showAppError(message) {
+      console.error("[Dashboard]", message);
       if (!appAlert) return;
-      appAlert.textContent = message;
-      appAlert.classList.add("visible");
+      appAlert.textContent = "";
+      appAlert.classList.remove("visible");
     }
 
     function clearAppError() {
@@ -2540,12 +2838,7 @@
     function updateRoutePreviewPosition() {
       if (!routePreview || !routeInput) return;
       const rect = routeInput.getBoundingClientRect();
-      const top = rect.bottom + window.scrollY + 4;
-      const left = rect.left + window.scrollX;
-      routePreview.style.top = `${top}px`;
-      routePreview.style.left = `${left}px`;
       routePreview.style.minWidth = `${rect.width}px`;
-      routePreview.style.maxWidth = `${Math.max(rect.width, 320)}px`;
     }
     const updateRoutePreviewPositionDebounced = debounce(updateRoutePreviewPosition, 160);
 
@@ -3035,7 +3328,8 @@
           tempo_operacao_s: 0,
           velocidade_sum: 0,
           velocidade_count: 0,
-          num_veiculos: 0
+          num_veiculos: 0,
+          uniqueVehicles: new Set()
         };
         bucket.distancia_total += safeNumber(row.distancia_total);
         bucket.tempo_operacao_s += safeNumber(row.tempo_operacao_s ?? row.tempo_operacao_seg);
@@ -3054,6 +3348,8 @@
           row.Volume ??
           row.numVeiculos;
         bucket.num_veiculos += safeNumber(volumeValue);
+        const vehicleId = vehicleKeyFromRow(row);
+        if (vehicleId) bucket.uniqueVehicles.add(vehicleId);
         buckets.set(bucketKey, bucket);
       });
       const sorted = Array.from(buckets.entries()).sort((a, b) => a[0] - b[0]);
@@ -3063,10 +3359,12 @@
         const velocidade = data.tempo_operacao_s > 0
           ? data.distancia_total / (data.tempo_operacao_s / 3600.0)
           : meanSpeed;
+        const uniqueCount = data.uniqueVehicles?.size;
+        const volumeValue = Number.isFinite(uniqueCount) && uniqueCount > 0 ? uniqueCount : data.num_veiculos;
         return {
           interval,
           velComercial: Number.isFinite(velocidade) ? velocidade : 0,
-          volume: Number.isFinite(data.num_veiculos) ? data.num_veiculos : 0
+          volume: Number.isFinite(volumeValue) ? volumeValue : 0
         };
       });
       return applyRollingAverage(timeline);
@@ -3440,6 +3738,16 @@
       return { id, model, first: firstTs, last: lastTs, dist, trips };
     }
 
+    function vehicleKeyFromRow(row) {
+      if (!row || typeof row !== "object") return null;
+      const candidate = row.vehicle_id ?? row.id_veiculo ?? row.veiculo ?? row.id ?? row.vehicle ?? row.vehicleId ?? null;
+      if (candidate == null) return null;
+      const normalized = typeof candidate === "string"
+        ? candidate.trim()
+        : String(candidate);
+      return normalized ? normalized : null;
+    }
+
     function mergeVehicleRows(rows, startMs, endMs) {
       const byId = new Map();
       rows.forEach(row => {
@@ -3463,11 +3771,13 @@
         if (row.last != null && (merged.last == null || row.last > merged.last)) merged.last = row.last;
         if (Number.isFinite(numDist)) {
           const existingDist = Number(merged.dist);
-          if (!Number.isFinite(existingDist) || numDist > existingDist) merged.dist = row.dist;
+          const accumulatedDist = (Number.isFinite(existingDist) ? existingDist : 0) + numDist;
+          if (Number.isFinite(accumulatedDist)) merged.dist = accumulatedDist;
         }
         if (Number.isFinite(numTrips)) {
           const existingTrips = Number(merged.trips);
-          if (!Number.isFinite(existingTrips) || numTrips > existingTrips) merged.trips = row.trips;
+          const accumulatedTrips = (Number.isFinite(existingTrips) ? existingTrips : 0) + numTrips;
+          if (Number.isFinite(accumulatedTrips)) merged.trips = accumulatedTrips;
         }
         byId.set(key, merged);
       });
@@ -3511,10 +3821,16 @@
       const factor = dir === "asc" ? 1 : -1;
       rows.sort((a, b) => {
         switch (key) {
-          case "id":
-            return factor * compareNullable((a.id || "").toString().localeCompare((b.id || "").toString(), "pt-PT", { numeric: true }));
-          case "model":
-            return factor * compareNullable((a.model || "").toString().localeCompare((b.model || "").toString(), "pt-PT", { numeric: true }));
+          case "id": {
+            const left = (a.id ?? "").toString();
+            const right = (b.id ?? "").toString();
+            return factor * left.localeCompare(right, "pt-PT", { numeric: true });
+          }
+          case "model": {
+            const left = (a.model ?? "").toString();
+            const right = (b.model ?? "").toString();
+            return factor * left.localeCompare(right, "pt-PT", { numeric: true });
+          }
           case "first":
             return factor * compareNullable(a.first ?? null, b.first ?? null);
           case "last":
@@ -4633,17 +4949,25 @@
       const safeTitle = escapeHtml(titleText || "—");
       const safeDirLabel = dirLabel ? escapeHtml(dirLabel) : "";
       const pill = `<span class="route-pill route-pill--clickable popup-route-link" data-route-label="${safeLabel}" title="Filtrar pela carreira" style="--pill-bg:${headerFg === '#0f172a' ? '#ffffff' : 'rgba(255,255,255,0.14)'};--pill-fg:${headerFg};--pill-border:rgba(255,255,255,0.18)">${escapeHtml(code || label)}</span>`;
+      const rawVehicleId = v.id ?? v.vehicleId ?? v.vehicle ?? v.id_veiculo ?? "";
+      const normalizedVehicleId = (rawVehicleId == null) ? "" : String(rawVehicleId).trim().replace(/^#/, "");
+      const vehicleIdLabel = normalizedVehicleId ? `#${normalizedVehicleId}` : "—";
+      const fleetModel = fleetModelLabelForId(normalizedVehicleId);
+      const fallbackModel = (v.modelo || v.model || v.vehicle_model || v.tipo || v.type || "").trim();
+      const modelLabel = fleetModel || fallbackModel;
+      const safeVehicleIdLabel = escapeHtml(vehicleIdLabel);
+      const safeVehicleInfo = modelLabel ? `${safeVehicleIdLabel} - ${escapeHtml(modelLabel)}` : safeVehicleIdLabel;
       return `
         <div class="pop-header" style="background-color: ${headerColor}; color:${headerFg}">
           <div class="pop-header__left">
             ${pill}
             <span class="pop-title" title="${safeTitle}">${safeTitle}</span>
           </div>
-          <div class="pop-header__actions">
-            <span style="opacity: 0.8">#${v.id}</span>
-          </div>
         </div>
         <div class="pop-body">
+          <div class="pop-body__info">
+            <span><b>Veículo:</b> ${safeVehicleInfo}</span>
+          </div>
           ${safeDirLabel ? `<div style="margin-bottom:4px"><b>${safeDirLabel}</b></div>` : ""}
           <div style="margin-bottom:4px"><b>Velocidade:</b> ${Math.round(v.speed || 0)} km/h</div>
         </div>
@@ -4706,11 +5030,18 @@
       return { top: 20, bottom: 28, left, right };
     }
 
+    function isMobilePopupViewport(width = null) {
+      const fallbackWidth = (typeof window !== "undefined" ? window.innerWidth : NaN);
+      const candidate = Number.isFinite(width) ? width : fallbackWidth;
+      return Number.isFinite(candidate) && candidate <= MOBILE_POPUP_BREAKPOINT;
+    }
+
     function popupPanOptions() {
       const pad = mapSafePadding();
+      const autoPanEnabled = !isMobilePopupViewport();
       return {
         className: "custom-popup",
-        autoPan: true,
+        autoPan: autoPanEnabled,
         autoPanPaddingTopLeft: [pad.left, pad.top],
         autoPanPaddingBottomRight: [pad.right, pad.bottom]
       };
@@ -4719,6 +5050,7 @@
     function ensurePopupVisible(lngLat, mapInstance) {
       const map = mapInstance || (adapter && adapter.map);
       if (!map || typeof map.project !== "function") return;
+      if (isMobilePopupViewport()) return;
       const container = map.getContainer?.();
       if (!container) return;
       const pad = mapSafePadding();
@@ -7273,7 +7605,7 @@
         const dirLabel = directionDisplayLabel(dep.routeId || dep.routeLabel || "", dep.directionId);
         const dirText = dirLabel ? dirLabel.replace(/^\s*Sentido:\s*/i, "").trim() : "";
         const dirHtml = dirText ? `<span class="stop-schedule__dir">${escapeHtml(dirText)}</span>` : "";
-        return `<div class="stop-schedule__row">${pill}${dirHtml}<span class="stop-schedule__time">${escapeHtml(etaLabel)}</span></div>`;
+        return `<div class="stop-schedule__row"><div class="stop-schedule__info">${pill}${dirHtml}</div><span class="stop-schedule__time">${escapeHtml(etaLabel)}</span></div>`;
       }).join("") + `</div>`;
     }
 
