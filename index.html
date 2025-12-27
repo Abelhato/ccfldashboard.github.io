@@ -2,7 +2,7 @@
 <html lang="pt-PT">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
   <title>Mapa de Frota em Tempo Real</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" crossorigin="">
@@ -18,6 +18,8 @@
       margin: 0;
       padding: 0;
       height: 100%;
+      overscroll-behavior: none;
+      overflow: hidden;
     }
 
     body {
@@ -358,17 +360,38 @@
         width: calc(100% - 16px);
       }
       #kpi-panel .kpi-grid {
-        grid-template-columns: repeat(3, minmax(100px, 1fr));
-        gap: 4px;
+        grid-template-columns: repeat(3, minmax(120px, 1fr));
+        gap: 6px;
       }
       #kpi-panel .kpi-card {
         background: var(--surface-2);
         border: 1px solid var(--border-strong);
-        align-items: flex-start;
-        padding: 6px 6px;
+        align-items: center;
+        padding: 6px;
+        min-height: 58px;
       }
       #kpi-panel .kpi-card strong {
         font-size: 1.08rem;
+      }
+      #kpi-panel .kpi-card .kpi-meta {
+        font-size: 0.6rem;
+      }
+      #kpi-panel .kpi-value {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+    @media (max-width: 640px) {
+      #kpi-panel .kpi-grid {
+        grid-template-columns: repeat(3, minmax(100px, 1fr));
+        gap: 4px;
+      }
+      #kpi-extra-row {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+      }
+      #kpi-extra-row.kpi-extra-row--three .kpi-card:nth-child(1) {
+        grid-column: 1 / -1;
       }
     }
 
@@ -437,7 +460,7 @@
       border-color: rgba(255, 255, 255, 0.18);
     }
 
-    .kpi-panel {
+.kpi-panel {
       position: absolute;
       top: 110px;
       left: 50%;
@@ -453,12 +476,135 @@
       flex-direction: column;
       gap: 12px;
       z-index: 1002;
+      overflow: visible;
+    }
+    .kpi-panel::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-top: 10px solid var(--surface-1);
+      width: 0;
+      z-index: 1001;
+    }
+    .kpi-panel.kpi-panel--expanded::after {
+      display: none;
+    }
+
+    .kpi-panel {
+      position: absolute;
+      top: 110px;
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+      width: min(560px, calc(100% - 36px));
+      background: var(--surface-1);
+      border-radius: 16px;
+      border: 1px solid var(--border-strong);
+      padding: 16px;
+      box-shadow: var(--shadow-strong);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 1002;
+      overflow: visible;
+    }
+
+    .kpi-panel-trigger {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 6px;
+      width: 86%;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 999px;
+      pointer-events: auto;
+      user-select: none;
+    }
+
+    .kpi-panel-trigger::before,
+    .kpi-panel-trigger::after {
+      content: "";
+      position: absolute;
+      height: 3px;
+      top: 78%;
+      transform: translateY(-50%) scaleX(0.75);
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.35);
+      opacity: 0.55;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+    .kpi-panel-trigger::before {
+      left: 6%;
+      width: 40%;
+    }
+    .kpi-panel-trigger::after {
+      right: 6%;
+      width: 40%;
+    }
+    .kpi-panel--expanded .kpi-panel-trigger::before,
+    .kpi-panel--expanded .kpi-panel-trigger::after {
+      transform: translateY(-50%) scaleX(0.95);
+      opacity: 0;
+    }
+    .kpi-panel-trigger:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+    }
+
+    .kpi-panel-trigger-icon {
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+      margin-top: 6px;
+      position: relative;
+      z-index: 2;
+    }
+    .kpi-panel--expanded .kpi-panel-trigger-icon {
+      margin-top: 12px;
+    }
+
+    .kpi-extra-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+      gap: 10px;
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.35s ease;
+    }
+    .kpi-extra-row.kpi-extra-row--two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .kpi-panel--expanded .kpi-extra-row {
+      max-height: 180px;
+    }
+
+    @media (max-width: 900px) {
+      .kpi-extra-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 640px) {
+      .kpi-extra-row.kpi-extra-row--three .kpi-card:nth-child(1) {
+        grid-column: 1 / -1;
+      }
+    }
+
+    .kpi-card--extra {
+      padding: 10px 12px;
     }
 
     .kpi-panel .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(120px, 1fr));
-      gap: 2px;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 6px;
       justify-items: stretch;
     }
 
@@ -485,19 +631,27 @@
 	      font-weight: 800;
 	      font-variant-numeric: tabular-nums;
 	    }
-	    .kpi-card .kpi-speed {
-	      display: inline-flex;
-	      justify-content: center;
-	      align-items: baseline;
-	      gap: 4px;
-	      white-space: nowrap;
-	    }
-	    .kpi-card .kpi-speed.has-unit::after {
-	      content: "km/h";
+    .kpi-card .kpi-speed {
+      display: inline-flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 4px;
+      white-space: nowrap;
+    }
+    .kpi-card .kpi-speed.has-unit::after {
+      content: "km/h";
       font-size: 0.72em;
       font-weight: 700;
       color: var(--text-muted);
       opacity: 0.75;
+    }
+    .kpi-card .kpi-value[data-unit]:not(.kpi-speed)::after {
+      content: attr(data-unit);
+      font-size: 0.72em;
+      font-weight: 700;
+      color: var(--text-muted);
+      opacity: 0.75;
+      margin-left: 0.25rem;
     }
     body.theme-dark .chart-card-header span {
       color: #f9fafb;
@@ -547,6 +701,10 @@
 
     body.theme-dark .kpi-panel {
       background: rgba(15, 23, 42, 0.88);
+    }
+
+    .kpi-card.kpi-card--hidden {
+      display: none;
     }
 
     body.theme-dark .kpi-card {
@@ -1006,6 +1164,55 @@
       height: 100%;
       width: 100%;
       background: var(--map-bg);
+    }
+
+    .user-location-btn {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      background: var(--surface-1);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+      z-index: 4500;
+    }
+    .user-location-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.26);
+    }
+    .user-location-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+    .user-location-btn .fa {
+      font-size: 1.2rem;
+      color: var(--text-primary);
+      transition: transform 0.3s ease;
+    }
+    .user-location-btn.is-active .fa {
+      color: var(--accent);
+    }
+    .user-location-btn.is-loading {
+      opacity: 0.9;
+    }
+    .user-location-btn.is-loading .fa {
+      animation: location-spin 1.2s linear infinite;
+    }
+    @keyframes location-spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @media (min-width: 901px) {
+      .user-location-btn {
+        display: none;
+      }
     }
 
     .app-alert {
@@ -1677,23 +1884,58 @@
       width: 34px;
       height: 34px;
       border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      background: rgba(255, 255, 255, 0.12);
-      color: #fff;
+      border: 1px solid rgba(15, 23, 42, 0.25);
+      background: rgba(255, 255, 255, 0.85);
+      color: #0f172a;
       font-size: 18px;
       line-height: 1;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
       cursor: pointer;
       z-index: 20;
       transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease;
     }
     .custom-popup .maplibregl-popup-close-button:hover {
+      background: rgba(255, 255, 255, 1);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+    body.theme-dark .custom-popup .maplibregl-popup-close-button {
+      border-color: rgba(255, 255, 255, 0.35);
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    }
+    body.theme-dark .custom-popup .maplibregl-popup-close-button:hover {
       background: rgba(255, 255, 255, 0.2);
       transform: translateY(-1px);
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+    body.theme-auto .custom-popup .maplibregl-popup-close-button {
+      border-color: rgba(15, 23, 42, 0.25);
+      background: rgba(255, 255, 255, 0.85);
+      color: #0f172a;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+    body.theme-auto .custom-popup .maplibregl-popup-close-button:hover {
+      background: rgba(255, 255, 255, 1);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+    @media (prefers-color-scheme: dark) {
+      body.theme-auto .custom-popup .maplibregl-popup-close-button {
+        border-color: rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+      }
+      body.theme-auto .custom-popup .maplibregl-popup-close-button:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-1px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      }
     }
 
     /* Leaflet Tooltips (ícones) */
@@ -2002,14 +2244,41 @@
             </strong>
             <span class="kpi-meta" id="kpi-last-update">—</span>
           </article>
-	          <article class="kpi-card">
-	            <span class="kpi-label">Vel. comercial</span>
-	            <strong class="kpi-value kpi-speed" id="kpi-vel-day">—</strong>
-	          </article>
-	          <article class="kpi-card">
-	            <span class="kpi-label">Vel. comercial (1 hora)</span>
-	            <strong class="kpi-value kpi-speed" id="kpi-vel-hour">—</strong>
-	            <span class="kpi-delta" id="kpi-vel-hour-delta">—</span>
+          <article class="kpi-card">
+            <span class="kpi-label">Vel. comercial</span>
+            <strong class="kpi-value kpi-speed" id="kpi-vel-day">—</strong>
+          </article>
+          <article class="kpi-card">
+            <span class="kpi-label">Vel. comercial (1 hora)</span>
+            <strong class="kpi-value kpi-speed" id="kpi-vel-hour">—</strong>
+            <span class="kpi-delta" id="kpi-vel-hour-delta">—</span>
+          </article>
+        </div>
+        <div
+          id="kpi-panel-trigger"
+          class="kpi-panel-trigger"
+          role="button"
+          tabindex="0"
+          aria-expanded="false"
+          aria-label="Alternar KPIs adicionais"
+        >
+          <span class="kpi-panel-trigger-icon" aria-hidden="true">⌄</span>
+        </div>
+        <div class="kpi-extra-row" id="kpi-extra-row" aria-hidden="true">
+          <article class="kpi-card kpi-card--extra">
+            <span class="kpi-label">Viagens efetuadas</span>
+            <strong class="kpi-value" id="kpi-trips-percent">—</strong>
+            <span class="kpi-meta" id="kpi-trips-meta">—</span>
+          </article>
+          <article class="kpi-card kpi-card--extra" data-kpi-frequency-card>
+            <span class="kpi-label">Frequência</span>
+            <strong class="kpi-value" id="kpi-frequency">—</strong>
+            <span class="kpi-meta" id="kpi-frequency-meta">intervalo médio</span>
+          </article>
+          <article class="kpi-card kpi-card--extra">
+            <span class="kpi-label">Distância</span>
+            <strong class="kpi-value" id="kpi-distance">—</strong>
+            <span class="kpi-meta" id="kpi-distance-meta">percorridos hoje</span>
           </article>
         </div>
       </div>
@@ -2049,6 +2318,7 @@
                   <thead>
                     <tr>
                     <th><button class="overlay-sort" data-sort="id" type="button">Veículo <span class="sort-icon">↕</span></button></th>
+                    <th><button class="overlay-sort" data-sort="chapa" type="button">Chapa <span class="sort-icon">↕</span></button></th>
                     <th><button class="overlay-sort" data-sort="model" type="button">Modelo <span class="sort-icon">↕</span></button></th>
                     <th><button class="overlay-sort" data-sort="first" type="button">Primeiro ping <span class="sort-icon">↕</span></button></th>
                     <th><button class="overlay-sort active" data-sort="last" type="button">Último ping <span class="sort-icon">↓</span></button></th>
@@ -2058,7 +2328,7 @@
                   </tr>
                 </thead>
                   <tbody id="overlay-vehicle-rows">
-                    <tr><td colspan="7" class="overlay-empty">A carregar…</td></tr>
+                    <tr><td colspan="8" class="overlay-empty">A carregar…</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -2066,6 +2336,9 @@
           </div>
         </div>
       </div>
+      <button id="user-location-btn" class="user-location-btn" type="button" aria-label="Mostrar a minha localização">
+        <i class="fa fa-location-arrow" aria-hidden="true"></i>
+      </button>
     </div>
   </div>
 
@@ -2243,7 +2516,7 @@
       category: KPI_BASE_URLS.map(base => `${base}/api/kpis/category`)
     };
     const KPI_CACHE_TTL_MS = 25_000;
-    const KPI_REFRESH_INTERVAL_MS = 30_000;
+    const KPI_REFRESH_INTERVAL_MS = 15_000;
     const CHART_PATHS = ["/historico/metricas/resumo", "/historico/metricas"];
     const CHARTS_ENDPOINTS = KPI_BASE_URLS.flatMap(base => CHART_PATHS.map(path => `${base}${path}`));
     const LOCAL_BACKENDS = BACKEND_BASES.length ? BACKEND_BASES : ["http://127.0.0.1:8001", "http://127.0.0.1:8002"];
@@ -2256,6 +2529,14 @@
     const CHARTS_DETAIL_ENDPOINTS = KPI_BASE_URLS.map(base => `${base}${CHARTS_DETAIL_PATH}`);
     const VEHICLE_DAY_ENDPOINTS = KPI_BASE_URLS.map(base => `${base}/frota/resumo-diario/veiculos`);
     const HEALTH_ENDPOINTS = KPI_BASE_URLS.map(base => `${base}/health`);
+    const CHAPA_SNAPSHOTS_ENDPOINT = "https://carris.pt/umbraco/surface/Vehicles/GetSnapshots";
+    const CHAPA_REFRESH_INTERVAL_MS = 5 * 60_000;
+    const CHAPA_FETCH_TIMEOUT_MS = 6000;
+    const FLEET_AGGREGATE_PATH = "/frota/resumo-diario/agrupado";
+    const FLEET_AGGREGATE_ENDPOINTS = KPI_BASE_URLS.map(base => `${base}${FLEET_AGGREGATE_PATH}`);
+    const FLEET_AGGREGATE_TTL_MS = 5 * 60_000;
+    let fleetDistanceCache = { date: "", ts: 0, payload: null };
+    let fleetDistanceFetchPromise = null;
     const FLEET_MODEL_CSV_URL = new URL("frota.csv", location.href);
     const FLEET_MODEL_CSV_FALLBACK = `ID_Inicio,ID_Fim,Modelo,Tipo,Categoria
 501,510,Elétricos Articulados SIEMENS,Elétrico,Articulado
@@ -2337,6 +2618,10 @@
     const ROUTE_DETAILS = new Map(); // routeId -> { shortName, longName }
     const BASE_ROUTE_DETAILS = new Map(); // baseId -> { shortName, longName }
     let routesCatalogLoaded = false;
+    let vehicleChapaMap = new Map();
+    let lastChapaFetchTs = 0;
+    let chapaRefreshTimerId = null;
+    let chapaFetchAbortController = null;
 
     const categorySelect = document.getElementById("category-filter");
     const routeInput = document.getElementById("route-filter");
@@ -2363,6 +2648,14 @@
     const kpiFloatingChip = document.getElementById("kpi-floating-chip");
     const kpiFloatingClear = document.getElementById("kpi-floating-clear");
     const kpiVelHourDelta = document.getElementById("kpi-vel-hour-delta");
+    const kpiTripsPercent = document.getElementById("kpi-trips-percent");
+    const kpiTripsMeta = document.getElementById("kpi-trips-meta");
+    const kpiFrequency = document.getElementById("kpi-frequency");
+    const kpiFrequencyCard = document.querySelector("[data-kpi-frequency-card]");
+    const kpiDistance = document.getElementById("kpi-distance");
+    const kpiPanelTrigger = document.getElementById("kpi-panel-trigger");
+    const kpiExtraRow = document.getElementById("kpi-extra-row");
+    const kpiPanelTriggerIcon = kpiPanelTrigger ? kpiPanelTrigger.querySelector(".kpi-panel-trigger-icon") : null;
     const appAlert = document.getElementById("app-alert");
     const chartSpeedCard = document.getElementById("chart-speed-card");
     const chartVolumeCard = document.getElementById("chart-volume-card");
@@ -2381,9 +2674,12 @@
     const floatingSearch = document.getElementById("floating-search");
     const floatingRouteInput = document.getElementById("floating-route-input");
     const floatingRoutePreview = document.getElementById("floating-route-preview");
+    const userLocationButton = document.getElementById("user-location-btn");
     const chartOverlayClose = document.getElementById("chart-overlay-close");
     const chartSectionToggle = document.getElementById("chart-section-toggle");
     const chartsSection = document.querySelector(".charts-section");
+    const mapContainer = document.getElementById("map-container");
+    const KPI_TRIGGER_DRAG_THRESHOLD = 12;
 
     const setChartSectionExpanded = expanded => {
       if (!chartSectionToggle || !chartsSection) return;
@@ -2398,7 +2694,11 @@
         setChartSectionExpanded(!currentlyExpanded);
       });
     }
+    let kpiTriggerDragState = null;
     let sidebarCollapsed = false;
+    let userLocationInFlight = false;
+    let mobileLocationPrompted = false;
+    let lastUserLocationCoords = null;
     let categoryKpisCache = { timestamp: 0, data: [] };
     let routeKpisCache = { timestamp: 0, key: "", row: null };
     let lastKpiTimestamp = null;
@@ -2415,6 +2715,7 @@
     let lastTrendLineCandidate = null;
     let volumeTableRows = [];
     let volumeTableSort = { key: "last", dir: "desc" };
+    let volumeOverlayChapaCache = new Map();
     const timeLabelFormatter = new Intl.DateTimeFormat("pt-PT", {
       hour: "2-digit",
       minute: "2-digit",
@@ -2853,9 +3154,10 @@
       }
     }
 
-    function previewEntries(query) {
+    function previewEntries(query, { allowEmpty = false } = {}) {
       if (!routeOptions) return [];
       const normalized = (query || "").trim().toLowerCase();
+      if (!allowEmpty && (!normalized || normalized === ROUTE_GLOBAL_LABEL.toLowerCase())) return [];
       const entries = [];
       routeOptions.forEach((data, baseId) => {
         const label = data.label || baseId;
@@ -2881,7 +3183,15 @@
 
     function renderRoutePreview(query) {
       if (!routePreview) return;
-      const entries = previewEntries(query);
+      const hasFocus = routeInput && document.activeElement === routeInput;
+      if (!hasFocus) {
+        routePreview.classList.add("hidden");
+        routePreview.innerHTML = "";
+        return;
+      }
+      const isFocused = routeInput && document.activeElement === routeInput;
+      const allowEmpty = isFocused && !((query || "").trim());
+      const entries = previewEntries(query, { allowEmpty });
       if (!entries.length) {
         routePreview.classList.add("hidden");
         routePreview.innerHTML = "";
@@ -3061,6 +3371,102 @@
 	      return rounded.toFixed(1);
 	    }
 
+    const TRIPS_NUMBER_FORMATTER = new Intl.NumberFormat("pt-PT");
+    function formatTripsNumber(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return "—";
+      return TRIPS_NUMBER_FORMATTER.format(Math.round(num));
+    }
+
+    function formatFrequencyValue(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num) || num <= 0) return null;
+      const rounded = Math.round(num * 10) / 10;
+      return rounded.toFixed(1);
+    }
+
+    function formatDistanceValue(value) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return null;
+      const rounded = Math.round(num * 10) / 10;
+      return rounded.toFixed(1);
+    }
+
+    function shouldShowFrequencyKpi() {
+      const hasVariant = selectedVariant && selectedVariant !== VARIANT_FILTER_ALL;
+      const hasRoute = selectedRoute && selectedRoute !== ROUTE_FILTER_ALL;
+      return Boolean(hasVariant || hasRoute);
+    }
+
+    function syncFrequencyKpiVisibility() {
+      if (!kpiFrequencyCard) return;
+      const show = shouldShowFrequencyKpi();
+      kpiFrequencyCard.classList.toggle("kpi-card--hidden", !show);
+      if (kpiExtraRow) {
+        const visibleExtras = Array.from(kpiExtraRow.children).filter(child => !child.classList.contains("kpi-card--hidden"));
+        kpiExtraRow.classList.toggle("kpi-extra-row--three", visibleExtras.length >= 3);
+        kpiExtraRow.classList.toggle("kpi-extra-row--two", visibleExtras.length === 2);
+      }
+    }
+
+    syncFrequencyKpiVisibility();
+
+    function setKpiExtrasExpanded(expanded) {
+      if (!kpiPanel || !kpiPanelTrigger) return;
+      const isExpanded = Boolean(expanded);
+      kpiPanel.classList.toggle("kpi-panel--expanded", isExpanded);
+      kpiPanelTrigger.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+      if (kpiExtraRow) {
+        kpiExtraRow.setAttribute("aria-hidden", isExpanded ? "false" : "true");
+      }
+      if (kpiPanelTriggerIcon) {
+        kpiPanelTriggerIcon.textContent = isExpanded ? "⌃" : "⌄";
+      }
+    }
+
+    if (kpiPanelTrigger) {
+      const toggleExtras = () => {
+        const currentlyExpanded = kpiPanel?.classList.contains("kpi-panel--expanded") || false;
+        setKpiExtrasExpanded(!currentlyExpanded);
+      };
+      const onPointerMove = (ev) => {
+        if (!kpiTriggerDragState) return;
+        const rect = mapContainer?.getBoundingClientRect?.();
+        if (rect && (ev.clientX < rect.left || ev.clientX > rect.right || ev.clientY < rect.top || ev.clientY > rect.bottom)) {
+          endDrag(ev);
+          return;
+        }
+        const delta = ev.clientY - kpiTriggerDragState.startY;
+        if (Math.abs(delta) < KPI_TRIGGER_DRAG_THRESHOLD) return;
+        setKpiExtrasExpanded(delta > 0);
+      };
+      const endDrag = (ev) => {
+        if (!kpiTriggerDragState) return;
+        window.removeEventListener("pointermove", onPointerMove);
+        window.removeEventListener("pointerup", endDrag);
+        window.removeEventListener("pointercancel", endDrag);
+        kpiPanelTrigger.releasePointerCapture?.(ev.pointerId);
+        kpiTriggerDragState = null;
+      };
+      const startDrag = (ev) => {
+        if (ev.pointerType === "mouse" && ev.button !== 0) return;
+        kpiTriggerDragState = { startY: ev.clientY };
+        kpiPanelTrigger.setPointerCapture?.(ev.pointerId);
+        window.addEventListener("pointermove", onPointerMove);
+        window.addEventListener("pointerup", endDrag);
+        window.addEventListener("pointercancel", endDrag);
+      };
+      kpiPanelTrigger.addEventListener("click", toggleExtras);
+      kpiPanelTrigger.addEventListener("keydown", (ev) => {
+        if (ev.key === "Enter" || ev.key === " ") {
+          ev.preventDefault();
+          toggleExtras();
+        }
+      });
+      kpiPanelTrigger.addEventListener("pointerdown", startDrag);
+      setKpiExtrasExpanded(false);
+    }
+
     function normalizeContext(context) {
       if (context && typeof context === "object") {
         return { text: context.text || "", html: context.html || null };
@@ -3072,6 +3478,70 @@
     function isMobileViewport() {
       return window.matchMedia && window.matchMedia("(max-width: 900px)").matches;
     }
+
+    function updateUserLocationButtonState({ loading = false, message = "" } = {}) {
+      if (!userLocationButton) return;
+      userLocationButton.classList.toggle("is-loading", loading);
+      userLocationButton.classList.toggle("is-active", Boolean(lastUserLocationCoords));
+      if (message) {
+        userLocationButton.setAttribute("title", message);
+      } else {
+        userLocationButton.setAttribute("title", "Mostrar a minha localização");
+      }
+    }
+
+    function applyUserLocation(coords, { center = false } = {}) {
+      if (!coords) return;
+      const lat = Number(coords.latitude ?? coords.lat);
+      const lon = Number(coords.longitude ?? coords.lon);
+      const accuracy = Number.isFinite(coords.accuracy) ? Number(coords.accuracy) : null;
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+      lastUserLocationCoords = { lat, lon, accuracy };
+      if (adapter?.setUserLocation) {
+        adapter.setUserLocation([lat, lon], { center, accuracy });
+      }
+    }
+
+    function handleUserLocationSuccess(position, { center = false } = {}) {
+      userLocationInFlight = false;
+      applyUserLocation(position.coords, { center });
+      updateUserLocationButtonState({ loading: false });
+    }
+
+    function handleUserLocationError(err) {
+      userLocationInFlight = false;
+      const msg = err?.message || "Não foi possível obter a localização.";
+      console.warn("Geolocalização falhou:", err);
+      updateUserLocationButtonState({ loading: false, message: msg });
+    }
+
+    function requestUserLocation({ center = true, auto = false } = {}) {
+      if (!navigator?.geolocation) {
+        updateUserLocationButtonState({ message: "Localização indisponível neste navegador." });
+        return;
+      }
+      if (userLocationInFlight) return;
+      userLocationInFlight = true;
+      updateUserLocationButtonState({ loading: true });
+      navigator.geolocation.getCurrentPosition(
+        (position) => handleUserLocationSuccess(position, { center }),
+        handleUserLocationError,
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: auto ? 0 : 300000
+        }
+      );
+    }
+
+    function maybePromptMobileLocation() {
+      if (mobileLocationPrompted) return;
+      if (!isMobileViewport()) return;
+      mobileLocationPrompted = true;
+      requestUserLocation({ center: true, auto: true });
+    }
+
+    updateUserLocationButtonState();
 
     function buildCategoryContext(categoryName) {
       const cat = categoryName || selectedCategory;
@@ -3132,14 +3602,14 @@
     }
 
     function resetFiltersToGlobal() {
-      const categoryNeedsReset = categorySelect && categorySelect.value !== CATEGORY_FILTER_ALL;
-      if (categoryNeedsReset) {
-        categorySelect.value = CATEGORY_FILTER_ALL;
-        categorySelect.dispatchEvent(new Event("change", { bubbles: true }));
+      if (categorySelect) {
+        const categoryNeedsReset = categorySelect.value !== CATEGORY_FILTER_ALL;
+        if (categoryNeedsReset) {
+          categorySelect.value = CATEGORY_FILTER_ALL;
+          categorySelect.dispatchEvent(new Event("change", { bubbles: true }));
+        }
       }
-      else {
-        clearRouteSelection();
-      }
+      clearRouteSelection();
       closeFloatingSearch();
       updateFloatingContext(buildFloatingContext());
     }
@@ -3193,6 +3663,46 @@
       if (kpiVelHour) {
         kpiVelHour.textContent = velHourText ?? "—";
         kpiVelHour.classList.toggle("has-unit", Boolean(velHourText));
+      }
+      if (kpiTripsPercent) {
+        const percentVal = Number(row?.viagens_realizadas_pct);
+        kpiTripsPercent.textContent = Number.isFinite(percentVal)
+          ? `${percentVal.toFixed(1)}%`
+          : "—";
+      }
+      if (kpiTripsMeta) {
+        const actual = Number(row?.viagens_realizadas);
+        const scheduled = Number(row?.viagens_previstas);
+        let metaText = "—";
+        const hasActual = Number.isFinite(actual) && actual > 0;
+        const hasScheduled = Number.isFinite(scheduled) && scheduled > 0;
+        if (hasActual && hasScheduled) {
+          metaText = `${formatTripsNumber(actual)} de ${formatTripsNumber(scheduled)} previstas`;
+        } else if (hasActual) {
+          metaText = `${formatTripsNumber(actual)} viagens detetadas`;
+        } else if (hasScheduled) {
+          metaText = `${formatTripsNumber(scheduled)} viagens previstas`;
+        }
+        kpiTripsMeta.textContent = metaText;
+      }
+      if (kpiFrequency) {
+        const frequencyValue = formatFrequencyValue(row?.frequencia);
+        kpiFrequency.textContent = frequencyValue ?? "—";
+        if (frequencyValue) {
+          kpiFrequency.dataset.unit = "min";
+        } else {
+          kpiFrequency.removeAttribute("data-unit");
+        }
+      }
+      syncFrequencyKpiVisibility();
+      if (kpiDistance) {
+        const distanceValue = formatDistanceValue(row?.distancia_total);
+        kpiDistance.textContent = distanceValue ?? "—";
+        if (distanceValue) {
+          kpiDistance.dataset.unit = "km";
+        } else {
+          kpiDistance.removeAttribute("data-unit");
+        }
       }
       const ctx = normalizeContext(contextText);
       if (kpiContext) kpiContext.textContent = ctx.text || "—";
@@ -3299,6 +3809,21 @@
           latest.row.Volume ??
           latest.row.numVeiculos
         );
+      const counts = enriched
+        .map(item =>
+          safeNumber(
+            item.row.num_veiculos ??
+              item.row.Volume_Frota ??
+              item.row.Volume_Frota_Ativa ??
+              item.row.volume_frota ??
+              item.row.volume ??
+              item.row.Volume ??
+              item.row.numVeiculos
+          )
+        )
+        .filter(value => value > 0);
+      const avgVehicles = counts.length ? counts.reduce((sum, num) => sum + num, 0) / counts.length : null;
+      const frequency = avgVehicles ? 60 / avgVehicles : null;
       const deltaVel = (velHour ?? 0) - (velDay ?? velHour ?? 0);
       return {
         timestamp: latest.ts.toISOString(),
@@ -3306,6 +3831,8 @@
         vel_comercial: Number.isFinite(velDay) ? Number(velDay) : Number(velHour ?? 0),
         vel_comercial_1h: Number.isFinite(velHour) ? Number(velHour) : Number(velDay ?? 0),
         delta_vel_comercial: Number.isFinite(deltaVel) ? Number(deltaVel) : 0,
+        distancia_total: Number.isFinite(totalDistance) ? Number(totalDistance) : 0,
+        frequencia: Number.isFinite(frequency) ? Number(frequency) : null,
       };
     }
 
@@ -3733,9 +4260,12 @@
         row.total_distance ??
         null;
       const trips = row.viagens ?? row.num_viagens ?? row.trips ?? row.total_trips ?? row.viagens_concluidas ?? null;
+      const rawPlate = row.plate ?? row.placa ?? row.chapa ?? row.veiculo ?? row.vehicle_label ?? row.vehicle ?? "";
+      const plate = rawPlate ? String(rawPlate).trim() : "";
+      const chapa = parsePlateChapa(row.chapa ?? plate);
       const firstTs = normalizeTimestampMs(first);
       const lastTs = normalizeTimestampMs(last);
-      return { id, model, first: firstTs, last: lastTs, dist, trips };
+      return { id, model, first: firstTs, last: lastTs, dist, trips, plate, chapa };
     }
 
     function vehicleKeyFromRow(row) {
@@ -3746,6 +4276,21 @@
         ? candidate.trim()
         : String(candidate);
       return normalized ? normalized : null;
+    }
+
+    function cacheOverlayChapaEntry(idKey, plate, chapa) {
+      if (!idKey) return;
+      const safePlate = plate || "";
+      const safeChapa = chapa || "";
+      if (!safePlate && !safeChapa) return;
+      volumeOverlayChapaCache.set(idKey, { plate: safePlate, chapa: safeChapa });
+    }
+
+    function seedVolumeOverlayChapaCacheFromVehicleMap() {
+      // Keep the overlay cache populated with the latest snapshot entries so inactive vehicles keep their chapas.
+      for (const [entryId, entry] of vehicleChapaMap.entries()) {
+        cacheOverlayChapaEntry(entryId, entry?.plate, entry?.chapa);
+      }
     }
 
     function mergeVehicleRows(rows, startMs, endMs) {
@@ -3767,6 +4312,8 @@
         const numDist = Number(row.dist);
         const numTrips = Number(row.trips);
         merged.model = merged.model || row.model || "";
+        merged.plate = merged.plate || row.plate || "";
+        merged.chapa = merged.chapa || row.chapa || "";
         if (row.first != null && (merged.first == null || row.first < merged.first)) merged.first = row.first;
         if (row.last != null && (merged.last == null || row.last > merged.last)) merged.last = row.last;
         if (Number.isFinite(numDist)) {
@@ -3831,6 +4378,11 @@
             const right = (b.model ?? "").toString();
             return factor * left.localeCompare(right, "pt-PT", { numeric: true });
           }
+          case "chapa": {
+            const left = (a.chapa ?? "").toString();
+            const right = (b.chapa ?? "").toString();
+            return factor * left.localeCompare(right, "pt-PT", { numeric: true });
+          }
           case "first":
             return factor * compareNullable(a.first ?? null, b.first ?? null);
           case "last":
@@ -3852,13 +4404,14 @@
       if (!chartOverlayVehicleRows) return;
       const rows = sortedVolumeRows();
       if (!rows.length) {
-        chartOverlayVehicleRows.innerHTML = `<tr><td colspan="7" class="overlay-empty">Sem dados desta carreira para hoje.</td></tr>`;
+        chartOverlayVehicleRows.innerHTML = `<tr><td colspan="8" class="overlay-empty">Sem dados desta carreira para hoje.</td></tr>`;
         return;
       }
       const html = rows.map(row => {
         const active = row.active;
         return `<tr>
           <td>${escapeHtml(row.id || "—")}</td>
+          <td>${escapeHtml(row.chapa || "—")}</td>
           <td>${escapeHtml(row.model || "—")}</td>
           <td>${escapeHtml(formatTimeOnly(row.first))}</td>
           <td>${escapeHtml(formatTimeOnly(row.last))}</td>
@@ -3875,7 +4428,7 @@
       if (volumeTableSort.key === key) {
         volumeTableSort.dir = volumeTableSort.dir === "asc" ? "desc" : "asc";
       } else {
-        volumeTableSort = { key, dir: key === "id" || key === "first" ? "asc" : "desc" };
+        volumeTableSort = { key, dir: key === "id" || key === "first" || key === "chapa" ? "asc" : "desc" };
       }
       renderVolumeTableRows();
       updateVolumeSortButtons();
@@ -3902,7 +4455,7 @@
         resetOverlayTint();
         volumeTableRows = [];
         if (chartOverlayVehicleRows) {
-          chartOverlayVehicleRows.innerHTML = `<tr><td colspan="7" class="overlay-empty">Sem dados desta seleção.</td></tr>`;
+          chartOverlayVehicleRows.innerHTML = `<tr><td colspan="8" class="overlay-empty">Sem dados desta seleção.</td></tr>`;
         }
         return;
       }
@@ -3910,7 +4463,7 @@
       if (chartOverlayContent) chartOverlayContent.classList.add("volume-layout");
       applyVolumeOverlayTint();
       updateVolumeOverlayLayout();
-      chartOverlayVehicleRows.innerHTML = `<tr><td colspan="7" class="overlay-empty">A carregar…</td></tr>`;
+      chartOverlayVehicleRows.innerHTML = `<tr><td colspan="8" class="overlay-empty">A carregar…</td></tr>`;
       const today = new Date().toISOString().split("T")[0];
       const startMs = normalizeTimestampMs(`${today}T00:00:00`);
       const endMs = startMs != null ? startMs + 24 * 60 * 60 * 1000 : null;
@@ -3921,10 +4474,17 @@
         const normalized = rows.map(normalizeVehicleDayRow).filter(Boolean);
         const merged = mergeVehicleRows(normalized, startMs, endMs);
         if (!merged.length) {
-          chartOverlayVehicleRows.innerHTML = `<tr><td colspan="7" class="overlay-empty">Sem dados desta carreira para hoje.</td></tr>`;
+          chartOverlayVehicleRows.innerHTML = `<tr><td colspan="8" class="overlay-empty">Sem dados desta carreira para hoje.</td></tr>`;
           return;
         }
         volumeTableRows = merged.map(row => {
+          const chapaEntry = getVehicleChapaEntryById(row.id);
+          const idKey = normalizeVehicleChapaId(row.id);
+          const historical = idKey ? volumeOverlayChapaCache.get(idKey) : null;
+          const historicalPlate = historical?.plate || "";
+          const historicalChapa = historical?.chapa || "";
+          const plateValue = chapaEntry?.plate || row.plate || historicalPlate;
+          const chapaValue = chapaEntry?.chapa || row.chapa || historicalChapa || parsePlateChapa(plateValue);
           const live = liveById.get(String(row.id));
           const liveLast = live?.tsMs;
           const finalLast = Number.isFinite(liveLast)
@@ -3935,18 +4495,25 @@
           const tripsNum = Number(row.trips);
           return {
             ...row,
+            plate: plateValue,
+            chapa: chapaValue,
             last: finalLast,
             active,
             distKm: Number.isFinite(distKm) ? distKm : null,
             tripsNum: Number.isFinite(tripsNum) ? tripsNum : null
           };
         });
+        volumeTableRows.forEach(row => {
+          const idKey = normalizeVehicleChapaId(row.id);
+          if (!idKey) return;
+          cacheOverlayChapaEntry(idKey, row.plate, row.chapa);
+        });
         renderVolumeTableRows();
         updateVolumeSortButtons();
         updateVolumeOverlayLayout();
       }).catch(err => {
         console.warn("Falha ao carregar veículos do dia:", err);
-        chartOverlayVehicleRows.innerHTML = `<tr><td colspan="7" class="overlay-empty">Erro ao carregar dados.</td></tr>`;
+        chartOverlayVehicleRows.innerHTML = `<tr><td colspan="8" class="overlay-empty">Erro ao carregar dados.</td></tr>`;
       });
     }
 
@@ -4398,6 +4965,11 @@
       return data.find(item => item.categoria === "Global") || data[0];
     }
 
+    function getCachedCategoryRow(category) {
+      if (!categoryKpisCache.data || !categoryKpisCache.data.length) return null;
+      return findCategoryRow(categoryKpisCache.data, category);
+    }
+
     function buildUrlWithParams(endpoint, params) {
       try {
         const url = new URL(endpoint);
@@ -4471,6 +5043,94 @@
         console.warn("Falha ao carregar KPIs de categoria:", err);
         return categoryKpisCache.data || [];
       }
+    }
+
+    async function fetchFleetDistanceTotals(force = false) {
+      const today = new Date().toISOString().split("T")[0];
+      const now = Date.now();
+      if (!force && fleetDistanceCache.payload && fleetDistanceCache.date === today && (now - fleetDistanceCache.ts) < FLEET_AGGREGATE_TTL_MS) {
+        return fleetDistanceCache.payload;
+      }
+      if (!force && fleetDistanceFetchPromise) {
+        return fleetDistanceFetchPromise;
+      }
+      const promise = (async () => {
+        try {
+          const payload = await fetchFromEndpoints(FLEET_AGGREGATE_ENDPOINTS, { date: today });
+          if (payload && typeof payload === "object") {
+            fleetDistanceCache = { date: today, ts: Date.now(), payload };
+            return payload;
+          }
+        } catch (err) {
+          console.warn("Falha ao carregar distâncias agregadas da frota:", err);
+        } finally {
+          fleetDistanceFetchPromise = null;
+        }
+        return fleetDistanceCache.payload;
+      })();
+      fleetDistanceFetchPromise = promise;
+      return promise;
+    }
+
+    function normalizeCategoryKey(value) {
+      if (!value) return "";
+      const text = String(value).trim();
+      if (!text) return "";
+      return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    }
+
+    function resolveFleetDistanceOverride(totals, context) {
+      if (!totals || typeof totals !== "object") return null;
+      const lines = Array.isArray(totals.por_linha) ? totals.por_linha : [];
+      const categories = Array.isArray(totals.por_categoria) ? totals.por_categoria : [];
+      const ctx = context || {};
+      const hasSelection = Boolean(ctx.variant) || Boolean(ctx.route) || Boolean(ctx.category);
+      if (ctx.variant) {
+        const variantKey = normalizeRouteKey(ctx.variant);
+        const variantBase = getBaseRouteKey(variantKey);
+        const variantDistance = lines.reduce((sum, entry) => {
+          const entryKey = normalizeRouteKey(entry?.linha);
+          if (!entryKey) return sum;
+          const entryBase = getBaseRouteKey(entryKey);
+          if (entryKey === variantKey || (variantBase && entryBase === variantBase)) {
+            return sum + safeNumber(entry.distancia_total);
+          }
+          return sum;
+        }, 0);
+        if (variantDistance > 0) return variantDistance;
+      }
+      if (ctx.route) {
+        const routeBase = getBaseRouteKey(ctx.route);
+        const routeDistance = lines.reduce((sum, entry) => {
+          const entryKey = normalizeRouteKey(entry?.linha);
+          if (!entryKey) return sum;
+          if (getBaseRouteKey(entryKey) === routeBase) {
+            return sum + safeNumber(entry.distancia_total);
+          }
+          return sum;
+        }, 0);
+        if (routeDistance > 0) return routeDistance;
+      }
+      if (ctx.category) {
+        const normalizedCategory = normalizeCategoryKey(ctx.category);
+        const match = categories.find(item => normalizeCategoryKey(item?.categoria) === normalizedCategory);
+        if (match) {
+          const value = safeNumber(match.distancia_total);
+          if (value > 0) return value;
+        }
+      }
+      if (!hasSelection && categories.length) {
+        const total = categories.reduce((sum, item) => sum + safeNumber(item.distancia_total), 0);
+        if (total > 0) return total;
+      }
+      return null;
+    }
+
+    function applyFleetDistanceOverride(row, totals, context) {
+      if (!row || !totals) return row;
+      const override = resolveFleetDistanceOverride(totals, context);
+      if (!Number.isFinite(override) || override <= 0) return row;
+      return { ...row, distancia_total: override };
     }
 
     async function fetchRouteKpi(lineId, force = false) {
@@ -4574,14 +5234,42 @@
 
     async function refreshKpis(force = false) {
       if (!kpiPanel) return;
+      const fleetTotalsPromise = fetchFleetDistanceTotals();
+      const fleetContext = {
+        variant: selectedVariant && selectedVariant !== VARIANT_FILTER_ALL ? selectedVariant : null,
+        route: selectedRoute && selectedRoute !== ROUTE_FILTER_ALL ? selectedRoute : null,
+        category: selectedCategory && selectedCategory !== CATEGORY_FILTER_ALL ? selectedCategory : null,
+      };
+      const showRow = async (row, context) => {
+        if (!row) return false;
+        updateKpiDisplay(row, context);
+        let totals = null;
+        try {
+          totals = await fleetTotalsPromise;
+        } catch (err) {
+          totals = null;
+        }
+        const enhanced = applyFleetDistanceOverride(row, totals, fleetContext);
+        updateKpiDisplay(enhanced, context);
+        return true;
+      };
       const routeCandidates = getRouteLineCandidates();
       const computedRow =
         lastTrendSummary?.kpi ||
         computeRouteKpiFromRows(lastTrendSummary?.rows || []);
+      const isGlobalMode =
+        (!selectedRoute || selectedRoute === ROUTE_FILTER_ALL) &&
+        (!selectedVariant || selectedVariant === VARIANT_FILTER_ALL) &&
+        (!selectedCategory || selectedCategory === CATEGORY_FILTER_ALL);
+      if (isGlobalMode) {
+        const cachedGlobalRow = getCachedCategoryRow("global");
+        if (cachedGlobalRow) {
+          showRow(cachedGlobalRow, buildFloatingContext()).catch(() => {});
+        }
+      }
       if (routeCandidates.length > 0) {
         const contextText = buildRouteContext();
         const hasRouteData = lastTrendLineCandidate != null && routeCandidates.includes(lastTrendLineCandidate);
-        // Prefer the new scoped KPI endpoints (variant > route).
         let realtimeKpi = null;
         if (selectedVariant && selectedVariant !== VARIANT_FILTER_ALL) {
           realtimeKpi = await fetchRouteVariantKpi(selectedVariant, force);
@@ -4589,50 +5277,47 @@
           realtimeKpi = await fetchRouteKpi(routeCandidates[0], force);
         }
         if (realtimeKpi && computedRow) {
-          updateKpiDisplay(
+          return showRow(
             {
               ...computedRow,
               veiculos_ativos: realtimeKpi.veiculos_ativos ?? computedRow.veiculos_ativos,
               timestamp: realtimeKpi.timestamp ?? computedRow.timestamp,
               vel_comercial: realtimeKpi.vel_comercial ?? computedRow.vel_comercial,
               vel_comercial_1h: realtimeKpi.vel_comercial_1h ?? computedRow.vel_comercial_1h,
-              delta_vel_comercial: realtimeKpi.delta_vel_comercial ?? computedRow.delta_vel_comercial
+              delta_vel_comercial: realtimeKpi.delta_vel_comercial ?? computedRow.delta_vel_comercial,
+              viagens_realizadas: realtimeKpi.viagens_realizadas ?? computedRow.viagens_realizadas,
+              viagens_previstas: realtimeKpi.viagens_previstas ?? computedRow.viagens_previstas,
+              viagens_realizadas_pct: realtimeKpi.viagens_realizadas_pct ?? computedRow.viagens_realizadas_pct,
+              frequencia: realtimeKpi.frequencia ?? computedRow.frequencia,
+              distancia_total: realtimeKpi.distancia_total ?? computedRow.distancia_total,
             },
             contextText
           );
-          return;
         }
         if (realtimeKpi) {
-          updateKpiDisplay(realtimeKpi, contextText);
-          return;
+          return showRow(realtimeKpi, contextText);
         }
         if (hasRouteData && computedRow) {
-          updateKpiDisplay(computedRow, contextText);
-          return;
+          return showRow(computedRow, contextText);
         }
       }
-      // If no route is selected, prefer the scoped category/global KPI endpoints (more accurate + fresher timestamps).
       if (selectedCategory && selectedCategory !== CATEGORY_FILTER_ALL) {
         const categoryKpi = await fetchCategoryKpi(selectedCategory, force);
         if (categoryKpi) {
-          updateKpiDisplay(categoryKpi, buildCategoryContext(selectedCategory) || { text: selectedCategory });
-          return;
+          return showRow(categoryKpi, buildCategoryContext(selectedCategory) || { text: selectedCategory });
         }
       } else {
-        // "Rede global" should use the global category endpoint, not the chart-derived KPI.
         const globalKpi = await fetchCategoryKpi("global", force);
         if (globalKpi) {
-          updateKpiDisplay(globalKpi, buildFloatingContext());
-          return;
+          return showRow(globalKpi, buildFloatingContext());
         }
       }
-      if (computedRow) {
-        updateKpiDisplay(computedRow, buildFloatingContext());
-        return;
+      if (computedRow && !isGlobalMode) {
+        return showRow(computedRow, buildFloatingContext());
       }
       const data = await fetchCategoryKpis(force);
       const row = findCategoryRow(data, selectedCategory);
-      updateKpiDisplay(row, buildFloatingContext());
+      return showRow(row, buildFloatingContext());
     }
 
     function handleRouteInputCommit() {
@@ -4957,6 +5642,8 @@
       const modelLabel = fleetModel || fallbackModel;
       const safeVehicleIdLabel = escapeHtml(vehicleIdLabel);
       const safeVehicleInfo = modelLabel ? `${safeVehicleIdLabel} - ${escapeHtml(modelLabel)}` : safeVehicleIdLabel;
+      const chapaDisplay = v.chapa || v.plate || "—";
+      const safeChapa = escapeHtml(chapaDisplay);
       return `
         <div class="pop-header" style="background-color: ${headerColor}; color:${headerFg}">
           <div class="pop-header__left">
@@ -4969,7 +5656,7 @@
             <span><b>Veículo:</b> ${safeVehicleInfo}</span>
           </div>
           ${safeDirLabel ? `<div style="margin-bottom:4px"><b>${safeDirLabel}</b></div>` : ""}
-          <div style="margin-bottom:4px"><b>Velocidade:</b> ${Math.round(v.speed || 0)} km/h</div>
+          <div style="margin-bottom:4px"><b>Chapa:</b> ${safeChapa}</div>
         </div>
       `;
     }
@@ -5079,6 +5766,19 @@
     function decorateVehicle(vehicle) {
       if (!vehicle) return vehicle;
       const enriched = { ...vehicle };
+      const chapaEntry = getVehicleChapaEntryById(
+        enriched.id ?? enriched.vehicleId ?? enriched.vehicle ?? enriched.vehicle_id ?? enriched.id_veiculo ?? ""
+      );
+      if (chapaEntry) {
+        enriched.plate = chapaEntry.plate;
+        enriched.chapa = chapaEntry.chapa;
+      } else {
+        const fallbackPlate = enriched.plate ?? enriched.placa ?? enriched.vehicle_plate ?? enriched.vehiclePlate ?? "";
+        if (fallbackPlate) {
+          enriched.plate = fallbackPlate;
+          enriched.chapa = enriched.chapa || parsePlateChapa(fallbackPlate);
+        }
+      }
       const routeRaw = normalizeRouteKey(resolveRouteId(vehicle));
       const label = resolvePublicRouteLabel(routeRaw || vehicle.linha);
       const category = definirCategoria(label || routeRaw || vehicle.category);
@@ -5238,6 +5938,8 @@
         this.overlayGroup = L.layerGroup().addTo(this.map);
         this.routeShapesLayer = L.layerGroup().addTo(this.overlayGroup);
         this.routeStopsLayer = L.layerGroup().addTo(this.overlayGroup);
+        this.userLocationMarker = null;
+        this.userLocationAccuracy = null;
         this.isInteracting = false;
         this._interactionTimeout = null;
         this.animationDuration = Math.max(300, Math.min(ANIMATION_MS, REFRESH_RATE_MS - 150));
@@ -5338,6 +6040,51 @@
       clearOverlay() {
         this.routeShapesLayer?.clearLayers?.();
         this.routeStopsLayer?.clearLayers?.();
+      }
+
+      setUserLocation(coords, { center = false, accuracy = 0 } = {}) {
+        if (!this.map || !coords || coords.length < 2) return;
+        const [lat, lon] = coords;
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+        const radius = Number.isFinite(accuracy) ? Math.max(accuracy, 20) : 60;
+        if (this.userLocationAccuracy) {
+          this.userLocationAccuracy.setLatLng([lat, lon]);
+          this.userLocationAccuracy.setRadius(radius);
+        } else {
+          this.userLocationAccuracy = L.circle([lat, lon], {
+            radius,
+            color: "rgba(59, 130, 246, 0.25)",
+            fillColor: "rgba(59, 130, 246, 0.15)",
+            weight: 0
+          }).addTo(this.map);
+        }
+        if (this.userLocationMarker) {
+          this.userLocationMarker.setLatLng([lat, lon]);
+        } else {
+          this.userLocationMarker = L.circleMarker([lat, lon], {
+            radius: 7,
+            color: "#3b82f6",
+            weight: 2,
+            fillColor: "#1d4ed8",
+            fillOpacity: 0.95
+          }).addTo(this.map);
+        }
+        if (center) {
+          try {
+            this.map.flyTo([lat, lon], Math.max(this.map.getZoom(), 13), { duration: 0.9, essential: true });
+          } catch (e) {}
+        }
+      }
+
+      clearUserLocation() {
+        if (this.userLocationMarker) {
+          this.userLocationMarker.remove();
+          this.userLocationMarker = null;
+        }
+        if (this.userLocationAccuracy) {
+          this.userLocationAccuracy.remove();
+          this.userLocationAccuracy = null;
+        }
       }
 
       setRouteOverlay(payload, { fit = false } = {}) {
@@ -5447,6 +6194,12 @@
               keyboard: false
             }).addTo(this.map);
             marker.bindPopup(popupHtml(v, style), popupPanOptions());
+            marker.on("popupopen", () => {
+              const current = this.markers.get(vid);
+              if (current?.data) {
+                prewarmRouteOverlayForVehicle(current.data).catch(() => {});
+              }
+            });
             entry = {
               marker,
               styleKey: `${style.color}|${style.icon}`,
@@ -5519,6 +6272,9 @@
         this.overlayReady = false;
         this.routeOverlayFeatures = [];
         this.globalStopFeatures = [];
+        this.userLocationSourceId = "user-location-source";
+        this.userLocationLayerId = "user-location-layer";
+        this.userLocationAccuracyLayerId = "user-location-accuracy-layer";
         this._lastRouteStopsCount = 0;
         this._lastGlobalStopsCount = 0;
         this.activePopups = [];
@@ -5634,10 +6390,10 @@
         if (!this.map.getSource(this.overlaySourceId)) {
           this.map.addSource(this.overlaySourceId, { type: "geojson", data: empty });
         }
-	        if (!this.map.hasImage?.("stop-triangle")) {
-	          const canvas = document.createElement("canvas");
-	          canvas.width = 24;
-	          canvas.height = 24;
+        if (!this.map.hasImage?.("stop-triangle")) {
+          const canvas = document.createElement("canvas");
+          canvas.width = 24;
+          canvas.height = 24;
 	          const ctx = canvas.getContext("2d");
 	          // Up-pointing triangle; MapLibre rotates clockwise (degrees).
 	          ctx.fillStyle = "#000";
@@ -6032,6 +6788,79 @@
         }
       }
 
+      initUserLocationLayer() {
+        if (!this.map) return;
+        const empty = { type: "FeatureCollection", features: [] };
+        if (!this.map.getSource(this.userLocationSourceId)) {
+          this.map.addSource(this.userLocationSourceId, { type: "geojson", data: empty });
+        }
+        if (!this.map.getLayer(this.userLocationAccuracyLayerId)) {
+          this.map.addLayer({
+            id: this.userLocationAccuracyLayerId,
+            type: "circle",
+            source: this.userLocationSourceId,
+            paint: {
+              "circle-radius": 40,
+              "circle-color": "rgba(59, 130, 246, 0.15)",
+              "circle-stroke-width": 0
+            }
+          });
+        }
+        if (!this.map.getLayer(this.userLocationLayerId)) {
+          this.map.addLayer({
+            id: this.userLocationLayerId,
+            type: "circle",
+            source: this.userLocationSourceId,
+            paint: {
+              "circle-radius": 8,
+              "circle-color": "#3b82f6",
+              "circle-stroke-color": "#ffffff",
+              "circle-stroke-width": 2
+            }
+          });
+        }
+      }
+
+      setUserLocation(coords, { center = false, accuracy = 0 } = {}) {
+        if (!this.map || !coords || coords.length < 2) return;
+        const [lat, lon] = coords;
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+        this.initUserLocationLayer();
+        const src = this.map.getSource(this.userLocationSourceId);
+        if (src && typeof src.setData === "function") {
+          const feature = {
+            type: "FeatureCollection",
+            features: [{
+              type: "Feature",
+              geometry: { type: "Point", coordinates: [lon, lat] },
+              properties: { accuracy: Number.isFinite(accuracy) ? accuracy : 0 }
+            }]
+          };
+          src.setData(feature);
+        }
+        const radius = Math.max(24, Math.min(accuracy ? accuracy / 2 : 32, 120));
+        try {
+          this.map.setPaintProperty(this.userLocationAccuracyLayerId, "circle-radius", radius);
+        } catch (e) {}
+        if (center) {
+          try {
+            this.map.easeTo({
+              center: [lon, lat],
+              zoom: Math.max(this.map.getZoom(), 13),
+              duration: 0.8
+            });
+          } catch (e) {}
+        }
+      }
+
+      clearUserLocation() {
+        if (!this.map) return;
+        const src = this.map.getSource(this.userLocationSourceId);
+        if (src && typeof src.setData === "function") {
+          src.setData({ type: "FeatureCollection", features: [] });
+        }
+      }
+
 	      setGlobalStops(payload) {
 	        if (!this.map) return;
 	        // When vector tiles are enabled for global stops, skip GeoJSON overlay updates.
@@ -6127,7 +6956,15 @@
           .addTo(this.map);
         const popup = new maplibregl.Popup({ offset: 18, className: "custom-popup" }).setHTML(popupHtml(vehicle, style));
         marker.setPopup(popup);
-        try { popup.on("open", () => ensurePopupVisible(marker.getLngLat(), this.map)); } catch (e) {}
+        try {
+          popup.on("open", () => {
+            ensurePopupVisible(marker.getLngLat(), this.map);
+            const current = this.markers.get(id);
+            if (current?.data) {
+              prewarmRouteOverlayForVehicle(current.data).catch(() => {});
+            }
+          });
+        } catch (e) {}
         const state = {
           id,
           marker,
@@ -6298,19 +7135,30 @@
       throw new Error("Nenhum renderer de mapa disponível (MapLibre ou Leaflet).");
     }
 
-	    let adapter;
-	    try {
-	      adapter = createAdapter();
-	    } catch (err) {
-	      showAppError(`Falha ao inicializar o mapa: ${err?.message || err}`);
-	      adapter = {
-	        ready: Promise.resolve(),
-	        updateVehicles: () => 0,
-	        setVisibleIds: () => 0,
-          clearOverlay: () => {},
-          setRouteOverlay: () => {}
-	      };
-	    }
+    let adapter;
+    try {
+      adapter = createAdapter();
+    } catch (err) {
+      showAppError(`Falha ao inicializar o mapa: ${err?.message || err}`);
+      adapter = {
+        ready: Promise.resolve(),
+        updateVehicles: () => 0,
+        setVisibleIds: () => 0,
+        clearOverlay: () => {},
+        setRouteOverlay: () => {},
+        setUserLocation: () => {},
+        clearUserLocation: () => {}
+      };
+    }
+
+    const adapterReady = Promise.resolve(adapter.ready);
+    adapterReady.then(() => {
+      maybePromptMobileLocation();
+    });
+    window.addEventListener("resize", () => maybePromptMobileLocation(), { passive: true });
+    if (userLocationButton) {
+      userLocationButton.addEventListener("click", () => requestUserLocation({ center: true }));
+    }
 
     function clampNumber(v, min, max) {
       const n = Number(v);
@@ -7143,7 +7991,7 @@
       return VEHICLE_DAY_ENDPOINTS.map(base => `${base}?date=${encodeURIComponent(day)}&line_id=${encoded}`);
     }
 
-    async function fetchRouteOverlayPayload(routeIds, { forceNetwork = false } = {}) {
+    async function fetchRouteOverlayPayload(routeIds, { forceNetwork = false, signal } = {}) {
       const now = Date.now();
       const ids = normalizeOverlayIds(routeIds);
       const cacheKey = JSON.stringify({ ids });
@@ -7171,8 +8019,16 @@
           const color = routeDirectionColor(routeId, dirId);
           tasks.push((async () => {
             const [shapeResult, stopsResult] = await Promise.allSettled([
-              fetchFromEndpoints(shapeEndpoints(routeId), { direction: String(serverDirectionForClientDirection(dirId)) }),
-              fetchFromEndpoints(stopsEndpoints(routeId), { direction: String(serverDirectionForClientDirection(dirId)), limit: "220" })
+              fetchFromEndpoints(
+                shapeEndpoints(routeId),
+                { direction: String(serverDirectionForClientDirection(dirId)) },
+                { signal }
+              ),
+              fetchFromEndpoints(
+                stopsEndpoints(routeId),
+                { direction: String(serverDirectionForClientDirection(dirId)), limit: "220" },
+                { signal }
+              )
             ]);
             if (shapeResult.status === "fulfilled" && shapeResult.value && shapeResult.value.type) {
               shapes.push({ routeId, directionId: dirId, color, geojson: shapeResult.value });
@@ -7197,6 +8053,11 @@
         fetchFailed = true;
       }
 
+      if (signal?.aborted) {
+        if (fetchFailed && cached?.payload) return cached.payload;
+        return cached?.payload || null;
+      }
+
       const payload = { routeIds: ids, shapes, stops };
       overlayCache.set(cacheKey, { ts: now, payload });
       writeOverlayToIdb(cacheKey, payload);
@@ -7205,7 +8066,92 @@
       return payload;
     }
 
+    const routeOverlayPrefetchSet = new Set();
+
+    let routeOverlayPrefetchAbortController = null;
+
+    function cancelRouteOverlayPrefetch() {
+      if (routeOverlayPrefetchAbortController) {
+        routeOverlayPrefetchAbortController.abort();
+        routeOverlayPrefetchAbortController = null;
+      }
+    }
+
+    function overlayVariantIdsFromLabel(label) {
+      const normalized = normalizeOptionKey(label);
+      if (!normalized) return [];
+      const candidates = new Set();
+      const baseId =
+        resolveBaseIdFromLabel(normalized) ||
+        resolveRouteInputValue(normalized) ||
+        getBaseRouteKey(normalized) ||
+        "";
+      const entry = routeOptions.get(baseId);
+      if (entry && entry.variants) {
+        for (const variantId of entry.variants.keys()) {
+          const candidate = normalizeOptionKey(variantId);
+          if (candidate) candidates.add(candidate);
+        }
+      }
+      if (!candidates.size) {
+        candidates.add(normalizeOptionKey(normalized));
+        if (baseId && baseId !== ROUTE_FILTER_ALL) {
+          const baseCandidate = normalizeOptionKey(baseId);
+          if (baseCandidate) candidates.add(baseCandidate);
+        }
+      }
+      return Array.from(candidates);
+    }
+
+    function collectOverlayVariantIds(labels) {
+      const list = Array.isArray(labels) ? labels : [labels];
+      const ids = new Set();
+      list.forEach(label => {
+        overlayVariantIdsFromLabel(label).forEach(id => ids.add(id));
+      });
+      return Array.from(ids);
+    }
+
+    async function prewarmRouteOverlayForIds(routeIds = []) {
+      const normalized = normalizeOverlayIds(routeIds);
+      if (!normalized.length) return;
+      const unseen = normalized.filter(id => !routeOverlayPrefetchSet.has(id));
+      if (!unseen.length) return;
+      unseen.forEach(id => routeOverlayPrefetchSet.add(id));
+      cancelRouteOverlayPrefetch();
+      const controller = new AbortController();
+      routeOverlayPrefetchAbortController = controller;
+      try {
+        await fetchRouteOverlayPayload(unseen, { signal: controller.signal });
+      } catch (err) {
+        // Ignore failures to keep popup interactions fast.
+      } finally {
+        if (routeOverlayPrefetchAbortController === controller) {
+          routeOverlayPrefetchAbortController = null;
+        }
+      }
+    }
+
+    function prewarmRouteOverlayForRouteLabels(labels) {
+      const ids = collectOverlayVariantIds(labels);
+      if (!ids.length) return Promise.resolve();
+      return prewarmRouteOverlayForIds(ids);
+    }
+
+    function prewarmRouteOverlayForVehicle(vehicle) {
+      if (!vehicle) return Promise.resolve();
+      const candidates = [];
+      if (vehicle.routeId) candidates.push(vehicle.routeId);
+      if (vehicle.routeLabel) candidates.push(vehicle.routeLabel);
+      if (vehicle.route) candidates.push(vehicle.route);
+      if (vehicle.linha) candidates.push(vehicle.linha);
+      if (vehicle.line_id) candidates.push(vehicle.line_id);
+      if (vehicle.linha_id) candidates.push(vehicle.linha_id);
+      return prewarmRouteOverlayForRouteLabels(candidates);
+    }
+
     async function refreshRouteOverlay(force = false) {
+      cancelRouteOverlayPrefetch();
       const ids = normalizeOverlayIds(resolveOverlayVariantIds());
       const wantKey = ids.length ? JSON.stringify(ids) : null;
 
@@ -7281,12 +8227,39 @@
     const tripsInflight = new Map(); // cacheKey -> Promise
     const stopTimesCache = new Map(); // stop_id -> { ts, rows }
     const stopTimesInflight = new Map(); // stop_id -> Promise
+    const STOP_SCHEDULE_CACHE_TTL_MS = 20_000;
+    const stopScheduleCache = new Map(); // "{stopId}|{contextKey}" -> { ts, schedule }
     let stopScheduleRequestSeq = 0;
     const stopScheduleTracker = new Map(); // stop_id -> { requestId, contextKey }
     let activeStopPopup = null; // { stopId, stopName, target }
 
     function buildScheduleContextKey() {
       return "all-routes";
+    }
+
+    function stopScheduleCacheKey(stopId, contextKey) {
+      const id = (stopId == null) ? "" : String(stopId).trim();
+      if (!id) return null;
+      const ctx = (contextKey == null) ? "" : String(contextKey);
+      return `${id}|${ctx}`;
+    }
+
+    function readStopScheduleCache(stopId, contextKey) {
+      const key = stopScheduleCacheKey(stopId, contextKey);
+      if (!key) return null;
+      const entry = stopScheduleCache.get(key);
+      if (!entry) return null;
+      if ((Date.now() - entry.ts) > STOP_SCHEDULE_CACHE_TTL_MS) {
+        stopScheduleCache.delete(key);
+        return null;
+      }
+      return entry.schedule;
+    }
+
+    function writeStopScheduleCache(stopId, contextKey, schedule) {
+      const key = stopScheduleCacheKey(stopId, contextKey);
+      if (!key || !schedule) return;
+      stopScheduleCache.set(key, { ts: Date.now(), schedule });
     }
 
     function resolveActiveRouteContext() {
@@ -7461,8 +8434,8 @@
       return { status: "loading" };
     }
 
-    async function requestStopSchedule(stopId) {
-      const contextKey = buildScheduleContextKey();
+    async function requestStopSchedule(stopId, options = {}) {
+      const contextKey = options.contextKey ?? buildScheduleContextKey();
       const key = (stopId == null) ? "" : String(stopId);
       if (!key) return { status: "idle", contextKey };
       const requestId = ++stopScheduleRequestSeq;
@@ -7479,11 +8452,13 @@
           clock: formatSecondsToClock(item.seconds),
           etaMinutes: Math.max(0, Math.round((item.seconds - nowSeconds) / 60))
         }));
-        return {
+        const scheduleResult = {
           status: departures.length ? "success" : "empty",
           departures,
           contextKey
         };
+        writeStopScheduleCache(key, contextKey, scheduleResult);
+        return scheduleResult;
       } catch (err) {
         const latest = stopScheduleTracker.get(key);
         if (!latest || latest.requestId !== requestId || latest.contextKey !== contextKey) return null;
@@ -7693,11 +8668,15 @@
     }
 
     async function hydrateStopPopup(target, { stopId, stopName } = {}) {
-      let scheduleState = initialScheduleStateForContext();
-      applyStopPopupContent(target, { stopName, stopId, loading: true, routes: [], schedule: scheduleState });
+      const stopKey = (stopId == null) ? "" : String(stopId);
+      const contextKey = buildScheduleContextKey();
+      const cachedSchedule = stopKey ? readStopScheduleCache(stopKey, contextKey) : null;
+      let scheduleState = cachedSchedule || initialScheduleStateForContext();
+      const initialLoading = !Boolean(cachedSchedule);
+      applyStopPopupContent(target, { stopName, stopId, loading: initialLoading, routes: [], schedule: scheduleState });
       if (!stopId) return;
       const routesPromise = ensureStopRoutes(stopId);
-      const schedulePromise = requestStopSchedule(stopId);
+      const schedulePromise = requestStopSchedule(stopId, { contextKey });
       let routes = [];
       try {
         routes = await routesPromise;
@@ -7712,9 +8691,12 @@
           scheduleState = { status: "error" };
         }
       } catch (err) {
-        scheduleState = { status: "error" };
+        if (scheduleState?.status === "loading") {
+          scheduleState = { status: "error" };
+        }
       }
       applyStopPopupContent(target, { stopName, stopId, routes, loading: false, schedule: scheduleState });
+      prewarmRouteOverlayForRouteLabels(routes).catch(() => {});
       if (isMobileViewport()) {
         showMobileStopCard({ stopName, stopId, schedule: scheduleState, routes });
       }
@@ -7804,7 +8786,7 @@
 
     function renderFloatingRoutePreview(query) {
       if (!floatingRoutePreview) return;
-      const entries = previewEntries(query);
+      const entries = previewEntries(query, { allowEmpty: true });
       if (!entries.length) {
         floatingRoutePreview.innerHTML = `<div class="preview-item" aria-hidden="true"><span class="preview-label">Sem resultados</span></div>`;
         return;
@@ -8264,6 +9246,103 @@
        return normalized.map(decorateVehicle);
     }
 
+    function normalizeVehicleChapaId(value) {
+      if (value == null) return "";
+      const candidate = String(value).trim();
+      if (!candidate) return "";
+      return candidate.replace(/^#/, "");
+    }
+
+    function parsePlateChapa(plate) {
+      const safePlate = plate == null ? "" : String(plate).trim();
+      if (!safePlate) return "";
+      const index = safePlate.indexOf("Z");
+      if (index > 0) return safePlate.slice(0, index);
+      return safePlate;
+    }
+
+    function getVehicleChapaEntryById(value) {
+      const key = normalizeVehicleChapaId(value);
+      if (!key) return null;
+      return vehicleChapaMap.get(key) || null;
+    }
+
+    function applyChapaUpdates() {
+      if (Array.isArray(lastVehicles) && lastVehicles.length) {
+        lastVehicles = lastVehicles.map(decorateVehicle);
+        renderVehicles().catch(() => {});
+      }
+      if (Array.isArray(volumeTableRows) && volumeTableRows.length) {
+        volumeTableRows = volumeTableRows.map(row => {
+          const entry = getVehicleChapaEntryById(row.id);
+          const plate = entry?.plate || row.plate || "";
+          const chapa = entry?.chapa || row.chapa || parsePlateChapa(plate);
+          return { ...row, plate, chapa };
+        });
+        renderVolumeTableRows();
+      }
+    }
+
+    async function refreshVehicleChapas(force = false) {
+      const now = Date.now();
+      if (!force && vehicleChapaMap.size && (now - lastChapaFetchTs) < CHAPA_REFRESH_INTERVAL_MS) {
+        return vehicleChapaMap;
+      }
+      if (chapaFetchAbortController) {
+        try { chapaFetchAbortController.abort(); } catch (e) {}
+      }
+      const controller = new AbortController();
+      chapaFetchAbortController = controller;
+      try {
+        const response = await fetchWithTimeout(
+          CHAPA_SNAPSHOTS_ENDPOINT,
+          { cache: "no-store", signal: controller.signal },
+          CHAPA_FETCH_TIMEOUT_MS
+        );
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const payload = await response.json();
+        const entries = Array.isArray(payload)
+          ? payload
+          : (Array.isArray(payload?.vehicles) ? payload.vehicles : (Array.isArray(payload?.data) ? payload.data : []));
+        const nextMap = new Map();
+        for (const entry of entries) {
+          if (!entry) continue;
+          const idCandidate = entry?.id ?? entry?.vehicleId ?? entry?.vehicle_id ?? entry?.veiculo ?? "";
+          const normalizedId = normalizeVehicleChapaId(idCandidate);
+          if (!normalizedId) continue;
+          const plateRaw = entry?.plate ?? entry?.placa ?? entry?.vehicle_plate ?? entry?.vehiclePlate ?? "";
+          const plate = plateRaw ? String(plateRaw).trim() : "";
+          const chapa = parsePlateChapa(plate || entry?.chapa || "");
+          nextMap.set(normalizedId, { plate, chapa, route: (entry?.route ?? entry?.linha ?? "").toString().trim() });
+        }
+        for (const [key, value] of vehicleChapaMap.entries()) {
+          if (!nextMap.has(key)) {
+            nextMap.set(key, value);
+          }
+        }
+        vehicleChapaMap = nextMap;
+        seedVolumeOverlayChapaCacheFromVehicleMap();
+        lastChapaFetchTs = now;
+        applyChapaUpdates();
+        return vehicleChapaMap;
+      } catch (err) {
+        if (err?.name === "AbortError") return vehicleChapaMap;
+        console.warn("Falha ao carregar chapas:", err);
+        return vehicleChapaMap;
+      } finally {
+        if (chapaFetchAbortController === controller) {
+          chapaFetchAbortController = null;
+        }
+      }
+    }
+
+    function startChapaRefreshLoop() {
+      if (chapaRefreshTimerId) return;
+      chapaRefreshTimerId = setInterval(() => {
+        refreshVehicleChapas().catch(err => console.warn("Falha ao atualizar chapas:", err));
+      }, CHAPA_REFRESH_INTERVAL_MS);
+    }
+
     async function fetchData(options = {}) {
       const { signal = null } = options;
       const requestId = ++vehiclesRequestSeq;
@@ -8345,6 +9424,7 @@
     }
 
     function startKpiRefreshLoop() {
+      refreshKpis(true).catch(() => {});
       setInterval(() => {
         // Force refresh to bypass caches so KPIs update even if other polling loops are quiet.
         refreshKpis(true).catch(() => {});
@@ -8365,6 +9445,8 @@
       await refreshCharts(true).catch(() => {});
       startChartRefreshLoop();
       startKpiRefreshLoop();
+      refreshVehicleChapas(true).catch(err => console.warn("Falha ao carregar chapas iniciais:", err));
+      startChapaRefreshLoop();
       startPolling();
       handlePopupRouteActions();
     })();
