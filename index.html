@@ -7306,52 +7306,6 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       if (currentOverlayType) {
         renderOverlayChart(currentOverlayType);
       }
-      if (pendingChartFocus && trendTimeline.length) {
-        openChartOverlay(pendingChartFocus);
-        pendingChartFocus = null;
-      }
-    }
-
-    function parseMapSegment(segment) {
-      if (!segment) return null;
-      const parts = segment.split(",").map(part => part.trim());
-      if (parts.length !== 3) return null;
-      const zoom = Number(parts[0]);
-      const lat = Number(parts[1]);
-      const lon = Number(parts[2]);
-      if (!Number.isFinite(zoom) || !Number.isFinite(lat) || !Number.isFinite(lon)) return null;
-      return { zoom, lat, lon };
-    }
-
-    function parseFocusSegment(segment) {
-      if (!segment) return null;
-      const idx = segment.indexOf(":");
-      if (idx === -1) return null;
-      const type = segment.slice(0, idx).toLowerCase();
-      const value = decodeURIComponent(segment.slice(idx + 1) || "").trim();
-      if (!PERMALINK_FOCUS_TYPES.has(type) || !value) return null;
-      return { type, id: value };
-    }
-
-    function parseChartSegment(segment) {
-      if (!segment) return null;
-      const normalized = segment.toLowerCase();
-      if (normalized === "velocitychart") return "speed";
-      if (normalized === "vehiclechart") return "volume";
-      return null;
-    }
-
-    function parsePermalinkPath() {
-      const pathname = (window.location.pathname || "").replace(/\/+$/, "");
-      const segments = pathname.split("/").filter(Boolean);
-      const prefixIndex = segments.findIndex(seg => seg.toLowerCase() === PERMALINK_PREFIX);
-      if (prefixIndex === -1) return null;
-      const relevant = segments.slice(prefixIndex + 1);
-      return {
-        center: parseMapSegment(relevant[0]),
-        focus: parseFocusSegment(relevant[1]),
-        chart: parseChartSegment(relevant[2])
-      };
     }
 
     function normalizeTimestampMs(value) {
@@ -8093,7 +8047,6 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
         }
       }
       renderOverlayChart(type);
-      setPermalinkChart(type);
     }
 
     function closeChartOverlay() {
@@ -8104,7 +8057,6 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       }
       resetOverlayTint();
       currentOverlayType = null;
-      setPermalinkChart(null);
     }
 
     if (chartOverlayCanvas && !chartOverlayCanvas.dataset.tooltipClickBound) {
@@ -9089,14 +9041,9 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       return null;
     }
 
-    function normalizeDirectionForDisplay(routeKey, directionId) {
+    function normalizeDirectionForDisplay(directionId) {
       if (!(directionId === 0 || directionId === 1)) return directionId;
-      const parts = (routeKey || "").split("_");
-      const variantSuffix = parts.length > 1 ? parts[1] : "";
-      if (variantSuffix && variantSuffix !== "0") {
-        return directionId;
-      }
-      // Requested: destinations are switched for the default/base variant; invert the mapping there.
+      // Requested: destinations are switched; invert mapping.
       return directionId === 0 ? 1 : 0;
     }
 
@@ -9110,7 +9057,7 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
         || null;
       const pair = splitRouteDestinations(meta?.longName || "");
       if (!pair) return "Sentido: —";
-      const idx = normalizeDirectionForDisplay(normalized, directionId) === 0 ? 0 : 1;
+      const idx = normalizeDirectionForDisplay(directionId) === 0 ? 0 : 1;
       const dest = pair[idx];
       const text = (dest || "").trim();
       return `Sentido: ${text || "—"}`;
@@ -10612,31 +10559,27 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
           } catch (e) {}
         };
 	        // Leaflet supports multiple events in a single string; MapLibre doesn't.
-        if (adapter instanceof LeafletAdapter) {
-          const handleStopsUpdate = () => scheduleRefreshStops(false);
-          adapter.map.on("zoomend", () => {
-            handleStopsUpdate();
-            applyStopMarkerSize();
-            schedulePermalinkCenterSync();
-          });
-          adapter.map.on("moveend", handleStopsUpdate);
-          adapter.map.on("moveend", () => schedulePermalinkCenterSync());
-          adapter.map.on("movestart", cancelGlobalStopsFetch);
-          adapter.map.on("zoomstart", cancelGlobalStopsFetch);
-          applyStopMarkerSize();
-        } else if (adapter instanceof MapLibreAdapter) {
-          const handleStopsUpdate = () => scheduleRefreshStops(false);
-          adapter.map.on("zoomend", () => {
-            handleStopsUpdate();
-            applyStopMarkerSize();
-            updateMapLibreStopLabels();
-            schedulePermalinkCenterSync();
-          });
-          adapter.map.on("moveend", () => {
-            handleStopsUpdate();
-            updateMapLibreStopLabels();
-            schedulePermalinkCenterSync();
-          });
+	        if (adapter instanceof LeafletAdapter) {
+	          const handleStopsUpdate = () => scheduleRefreshStops(false);
+	          adapter.map.on("zoomend", () => {
+	            handleStopsUpdate();
+	            applyStopMarkerSize();
+	          });
+	          adapter.map.on("moveend", handleStopsUpdate);
+	          adapter.map.on("movestart", cancelGlobalStopsFetch);
+	          adapter.map.on("zoomstart", cancelGlobalStopsFetch);
+	          applyStopMarkerSize();
+	        } else if (adapter instanceof MapLibreAdapter) {
+	          const handleStopsUpdate = () => scheduleRefreshStops(false);
+	          adapter.map.on("zoomend", () => {
+	            handleStopsUpdate();
+	            applyStopMarkerSize();
+	            updateMapLibreStopLabels();
+	          });
+	          adapter.map.on("moveend", () => {
+	            handleStopsUpdate();
+	            updateMapLibreStopLabels();
+	          });
 	          adapter.map.on("movestart", cancelGlobalStopsFetch);
 	          adapter.map.on("zoomstart", cancelGlobalStopsFetch);
 	          applyStopMarkerSize();
@@ -11428,6 +11371,10 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       stopScheduleCache.set(key, { ts: Date.now(), schedule });
     }
 
+    function resolveActiveRouteContext() {
+      return { routeId: null, directionId: null, shapeId: null };
+    }
+
     function resolveRouteFilter() {
       // Use the route that está ativa no contexto (flutuante): variante preferida, senão base.
       if (selectedVariant && selectedVariant !== VARIANT_FILTER_ALL) return selectedVariant;
@@ -11746,7 +11693,6 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       if (card) card.classList.remove("visible");
       document.body.classList.remove("mobile-stop-open");
       activeStopPopup = null;
-      setPermalinkFocus(null);
       if (adapter?.map && adapter.map.closePopup) {
         try { adapter.map.closePopup(); } catch (e) {}
       }
@@ -11914,11 +11860,10 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       refreshGlobalStops(true).catch(() => {});
       refreshCharts(true).catch(() => {});
       refreshKpis(true);
-    fetchData().catch(() => {});
-    refreshActiveStopSchedule();
-    updateRouteChartHintVisibility();
-    setPermalinkFocus({ type: "route", id: selectedRoute });
-  }
+      fetchData().catch(() => {});
+      refreshActiveStopSchedule();
+      updateRouteChartHintVisibility();
+    }
 
     function handlePopupRouteActions() {
       document.addEventListener("click", (event) => {
@@ -12153,15 +12098,12 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       return results;
     }
 
-    function focusMapOnCoordinates(lat, lon, forcedZoom = null) {
+    function focusMapOnCoordinates(lat, lon) {
       if (!adapter?.map) return;
       if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
       const map = adapter.map;
       const currentZoom = Number(map.getZoom?.());
-      const baseZoom = Number.isFinite(forcedZoom) ? forcedZoom : currentZoom;
-      const targetZoom = Number.isFinite(baseZoom)
-        ? Math.max(MAP_ZOOM, baseZoom)
-        : Math.max(MAP_ZOOM, Number.isFinite(currentZoom) ? currentZoom : MAP_ZOOM);
+      const targetZoom = Math.max(MAP_ZOOM, Number.isFinite(currentZoom) ? currentZoom : MAP_ZOOM);
       try {
         if (typeof map.easeTo === "function") {
           map.easeTo({ center: [lon, lat], zoom: targetZoom, duration: 0.6 });
@@ -12173,135 +12115,6 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       } catch (err) {
         console.warn("Falha ao centrar o mapa na paragem:", err);
       }
-    }
-
-    const PERMALINK_PREFIX = "realtime";
-    const PERMALINK_CENTER_DECIMALS = { zoom: 2, coordinate: 5 };
-    const PERMALINK_FOCUS_TYPES = new Set(["stop", "route", "vehicle"]);
-    let permalinkState = {
-      center: { lat: MAP_CENTER[0], lon: MAP_CENTER[1], zoom: MAP_ZOOM },
-      focus: null,
-      chart: null
-    };
-    let lastPermalinkPath = "";
-    let pendingVehicleFocusId = null;
-    let pendingChartFocus = null;
-    let initialPermalinkSpec = null;
-
-    function formatNumber(value, decimals) {
-      if (!Number.isFinite(value)) return null;
-      const formatted = Number(value).toFixed(decimals);
-      if (!formatted) return null;
-      return String(Number(formatted));
-    }
-
-    function encodeMapSegment(center) {
-      if (!center) return null;
-      const lat = formatNumber(center.lat, PERMALINK_CENTER_DECIMALS.coordinate);
-      const lon = formatNumber(center.lon, PERMALINK_CENTER_DECIMALS.coordinate);
-      const zoom = formatNumber(center.zoom, PERMALINK_CENTER_DECIMALS.zoom);
-      if (!lat || !lon || !zoom) return null;
-      return `${zoom},${lat},${lon}`;
-    }
-
-    function encodeFocusSegment(focus) {
-      if (!focus || !focus.type || !focus.id) return null;
-      const type = focus.type.toLowerCase();
-      if (!PERMALINK_FOCUS_TYPES.has(type)) return null;
-      return `${type}:${encodeURIComponent(focus.id)}`;
-    }
-
-    function encodeChartSegment(chart) {
-      if (!chart) return null;
-      if (chart === "speed") return "velocitychart";
-      if (chart === "volume") return "vehiclechart";
-      return null;
-    }
-
-    function buildPermalinkPath() {
-      const segments = [PERMALINK_PREFIX];
-      const mapSegment = encodeMapSegment(permalinkState.center);
-      if (!mapSegment) return `/${PERMALINK_PREFIX}`;
-      segments.push(mapSegment);
-      const focusSegment = encodeFocusSegment(permalinkState.focus);
-      if (focusSegment) segments.push(focusSegment);
-      const chartSegment = encodeChartSegment(permalinkState.chart);
-      if (chartSegment) segments.push(chartSegment);
-      return `/${segments.join("/")}`;
-    }
-
-    function updatePermalinkPath() {
-      const path = buildPermalinkPath();
-      if (!path) return;
-      const search = window.location.search || "";
-      const fullPath = `${path}${search}`;
-      if (fullPath === lastPermalinkPath) return;
-      lastPermalinkPath = fullPath;
-      window.history.replaceState({}, "", fullPath);
-    }
-
-    function setPermalinkCenter(center) {
-      if (!center) return;
-      const lat = Number(center.lat);
-      const lon = Number(center.lon);
-      const zoom = Number(center.zoom);
-      if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
-      const normalized = {
-        lat,
-        lon,
-        zoom: Number.isFinite(zoom) ? zoom : permalinkState.center.zoom
-      };
-      permalinkState.center = normalized;
-      updatePermalinkPath();
-    }
-
-    function setPermalinkFocus(focus) {
-      const normalized = (focus && focus.type && focus.id)
-        ? { type: focus.type.toLowerCase(), id: String(focus.id || "").trim() }
-        : null;
-      if (normalized && !PERMALINK_FOCUS_TYPES.has(normalized.type)) return;
-      const existing = permalinkState.focus;
-      if (existing?.type === normalized?.type && existing?.id === normalized?.id) return;
-      permalinkState.focus = normalized;
-      updatePermalinkPath();
-    }
-
-    function setPermalinkChart(chartType) {
-      const normalized = (chartType === "speed" || chartType === "volume") ? chartType : null;
-      if (permalinkState.chart === normalized) return;
-      permalinkState.chart = normalized;
-      updatePermalinkPath();
-    }
-
-    function updatePermalinkCenterFromMap() {
-      if (!adapter?.map) return;
-      const map = adapter.map;
-      const center = map.getCenter ? map.getCenter() : null;
-      if (!center) return;
-      const lat = Number(center?.lat);
-      const lon = Number(center?.lng ?? center?.lon);
-      const zoom = Number(map.getZoom?.());
-      if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
-      setPermalinkCenter({ lat, lon, zoom: Number.isFinite(zoom) ? zoom : undefined });
-    }
-
-    const schedulePermalinkCenterSync = debounce(() => {
-      updatePermalinkCenterFromMap();
-    }, 200);
-
-    function applyPendingVehicleFocusIfNeeded() {
-      if (!pendingVehicleFocusId) return;
-      const candidate = (String(pendingVehicleFocusId || "")).trim();
-      if (!candidate || !Array.isArray(lastVehicles)) return;
-      const normalizedTarget = candidate.toLowerCase();
-      const match = lastVehicles.find(v => {
-        const id = String(v?.id ?? v?.vehicleId ?? v?.vehicle ?? "").trim();
-        return id && id.toLowerCase() === normalizedTarget;
-      });
-      if (!match) return;
-      focusMapOnCoordinates(match.lat, match.lon);
-      setPermalinkFocus({ type: "vehicle", id: candidate });
-      pendingVehicleFocusId = null;
     }
 
     function extractStopPreviewData(item) {
@@ -12367,7 +12180,6 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
         });
         activeStopPopup = { stopId, stopName, target: null };
       }
-      setPermalinkFocus({ type: "stop", id: stopId });
     }
 
     function buildSearchPreviewHtml(routeEntries, categoryEntries, stopEntries, { stopFirst = false } = {}) {
@@ -12531,7 +12343,6 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       fetchData({ forceGlobal: true, preferCache: false }).catch(() => {});
       clearCategoryFilter();
       updateRouteChartHintVisibility();
-      setPermalinkFocus(null);
     }
 
 	    function wireStopPopupPills(containerEl) {
@@ -12857,12 +12668,11 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       adapter.updateVehicles(baseList);
       const filtered = filterVehicles(baseList);
       const visibleIds = new Set(filtered.map(v => String(v.id)));
-    const visibleCount = typeof adapter.setVisibleIds === "function"
-      ? adapter.setVisibleIds(visibleIds)
-      : filtered.length;
-    applyPendingVehicleFocusIfNeeded();
-    return visibleCount;
-  }
+      const visibleCount = typeof adapter.setVisibleIds === "function"
+        ? adapter.setVisibleIds(visibleIds)
+        : filtered.length;
+      return visibleCount;
+    }
 
     function normalizeVehicles(data) {
        let list = [];
@@ -13082,45 +12892,6 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       }, KPI_REFRESH_INTERVAL_MS);
     }
 
-    async function applyInitialPermalinkSpec(spec) {
-      if (!spec) return;
-      if (spec.focus) {
-        setPermalinkFocus(spec.focus);
-      }
-      if (spec.chart) {
-        setPermalinkChart(spec.chart);
-      }
-      if (spec.center) {
-        setPermalinkCenter(spec.center);
-        await adapterReady;
-        focusMapOnCoordinates(spec.center.lat, spec.center.lon, spec.center.zoom);
-      }
-      if (spec.focus?.type === "route") {
-        await loadRoutesCatalog();
-        const resolved = resolveBaseIdFromLabel(spec.focus.id) || spec.focus.id;
-        if (resolved) {
-          applyRouteSelection(resolved);
-        }
-      } else if (spec.focus?.type === "stop") {
-        await preloadStopCatalog();
-        const match = stopCatalogEntries.find(entry =>
-          entry.stopId === spec.focus.id || entry.displayNumber === spec.focus.id
-        );
-        if (match) {
-          openStopScheduleFromSearch(match);
-        } else {
-          openStopScheduleFromSearch({ stopId: spec.focus.id, stopName: spec.focus.id || "" });
-        }
-      } else if (spec.focus?.type === "vehicle") {
-        pendingVehicleFocusId = spec.focus.id;
-      }
-      if (spec.chart) {
-        pendingChartFocus = spec.chart;
-      }
-    }
-
-    initialPermalinkSpec = parsePermalinkPath();
-
     setSidebarCollapsed(window.matchMedia && window.matchMedia("(max-width: 900px)").matches);
     initCategoryFilter();
     initCategorySearch();
@@ -13144,7 +12915,6 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
 (async () => {
       await checkApiHealth().catch(() => {});
       await Promise.allSettled([loadRouteTranslator(), loadRoutesCatalog()]);
-      await applyInitialPermalinkSpec(initialPermalinkSpec);
       await refreshCharts(true).catch(() => {});
       startChartRefreshLoop();
       startKpiRefreshLoop();
