@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-  <title>🚌 Dashboard Carris</title>
+  <title>Dashboard Carris</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" crossorigin="">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -5973,6 +5974,7 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       selectedCategory = CATEGORY_FILTER_ALL;
       syncCategoryInputs(CATEGORY_FILTER_ALL);
       closeCategoryPreview();
+      setHashFilters({ category: selectedCategory, variant: selectedVariant });
       return true;
     }
 
@@ -5987,7 +5989,7 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       }
     }
 
-    function applyCategorySelection(categoryValue) {
+    function applyCategorySelection(categoryValue, { skipHash = false } = {}) {
       const normalized = categoryValue || CATEGORY_FILTER_ALL;
       if (normalized === selectedCategory) {
         closeCategoryPreview();
@@ -6008,6 +6010,7 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       refreshKpis(true);
       updateRouteClearVisibility();
       renderSelectedRoutePill();
+      if (!skipHash) setHashFilters({ category: normalized, variant: selectedVariant });
     }
 
     function selectCategoryValue(category) {
@@ -6469,18 +6472,25 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       });
     }
 
+    function applyVariantSelection(value, { skipHash = false } = {}) {
+      const normalized = value || VARIANT_FILTER_ALL;
+      selectedVariant = normalized;
+      if (variantSelect) variantSelect.value = normalized;
+      renderVehicles();
+      refreshRouteOverlay(true).catch(() => {});
+      refreshGlobalStops(true).catch(() => {});
+      refreshKpis(true);
+      refreshCharts(true).catch(() => {});
+      if (!skipHash) setHashFilters({ category: selectedCategory, variant: selectedVariant });
+    }
+
     function initVariantFilter() {
       if (!variantSelect) return;
       variantSelect.innerHTML = "";
       variantSelect.appendChild(new Option("Todas as variantes", VARIANT_FILTER_ALL));
       variantSelect.value = VARIANT_FILTER_ALL;
       variantSelect.addEventListener("change", () => {
-        selectedVariant = variantSelect.value || VARIANT_FILTER_ALL;
-        renderVehicles();
-        refreshRouteOverlay(true).catch(() => {});
-        refreshGlobalStops(true).catch(() => {});
-        refreshKpis(true);
-        refreshCharts(true).catch(() => {});
+        applyVariantSelection(variantSelect.value);
       });
     }
 
@@ -12139,7 +12149,8 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
     let hashState = {
       center: { lat: MAP_CENTER[0], lon: MAP_CENTER[1], zoom: MAP_ZOOM },
       focus: null,
-      chart: null
+      chart: null,
+      filters: { category: null, variant: null }
     };
     let pendingVehicleFocusId = null;
     let pendingChartFocus = null;
@@ -12183,6 +12194,8 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       if (focusValue) params.set("focus", focusValue);
       const chartValue = encodeChartSegment(hashState.chart);
       if (chartValue) params.set("chart", chartValue);
+      if (hashState.filters.category) params.set("category", hashState.filters.category);
+      if (hashState.filters.variant) params.set("variant", hashState.filters.variant);
       return params;
     }
 
@@ -12226,6 +12239,13 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       const normalized = (chartType === "speed" || chartType === "volume") ? chartType : null;
       if (hashState.chart === normalized) return;
       hashState.chart = normalized;
+      if (!skipSync) syncHashState();
+    }
+
+    function setHashFilters(filters, { skipSync = false } = {}) {
+      const categoryVal = (filters?.category && filters.category !== CATEGORY_FILTER_ALL) ? filters.category : null;
+      const variantVal = (filters?.variant && filters.variant !== VARIANT_FILTER_ALL) ? filters.variant : null;
+      hashState.filters = { category: categoryVal, variant: variantVal };
       if (!skipSync) syncHashState();
     }
 
@@ -12281,7 +12301,11 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       return {
         center: parseMapSegment(params.get("map")),
         focus: parseFocusSegment(params.get("focus")),
-        chart: parseChartSegment(params.get("chart"))
+        chart: parseChartSegment(params.get("chart")),
+        filters: {
+          category: params.get("category") || null,
+          variant: params.get("variant") || null
+        }
       };
     }
 
@@ -12289,6 +12313,12 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
 
     async function applyInitialHashSpec(spec) {
       if (!spec) return;
+      if (spec.filters) {
+        setHashFilters(spec.filters, { skipSync: true });
+        if (spec.filters.category) {
+          applyCategorySelection(spec.filters.category, { skipHash: true });
+        }
+      }
       if (spec.chart) {
         setHashChart(spec.chart, { skipSync: true });
         pendingChartFocus = spec.chart;
@@ -12315,6 +12345,9 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
         openStopScheduleFromSearch(match || { stopId: spec.focus.id, stopName: spec.focus.id || "" });
       } else if (spec.focus?.type === "vehicle") {
         pendingVehicleFocusId = spec.focus.id;
+      }
+      if (spec.filters?.variant) {
+        applyVariantSelection(spec.filters.variant, { skipHash: true });
       }
     }
 
@@ -12561,6 +12594,7 @@ const FLOATING_SEARCH_MULTILINE_THRESHOLD = 56;
       clearCategoryFilter();
       updateRouteChartHintVisibility();
       setHashFocus(null);
+      setHashFilters({ category: selectedCategory, variant: selectedVariant });
     }
 
 	    function wireStopPopupPills(containerEl) {
